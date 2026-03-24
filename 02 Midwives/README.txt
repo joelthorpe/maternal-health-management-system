@@ -5,3 +5,8 @@ These pages will focus on
     - tblPatient
     - tblPatient_RiskFactors
     - tblRiskFactors
+
+From the initial design:
+
+"The midwives will create new patient profiles, 
+update appointment logs after check-ups, and review patient risk factors"
