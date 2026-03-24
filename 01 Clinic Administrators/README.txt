@@ -1,9 +1,14 @@
 These pages will focus on
 - creating fields for and updating tables such :
     - tblClinic
-    - tblRegion
     - tblRole
     - tblStaff
+- retrieving data from the following tables:
+    - tblClinic
+    - tblRole
+    - tblStaff
+    - tblPatient
+    - tblRegion
 
 From the initial design:
 

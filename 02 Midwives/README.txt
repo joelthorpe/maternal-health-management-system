@@ -5,6 +5,12 @@ These pages will focus on
     - tblPatient
     - tblPatient_RiskFactors
     - tblRiskFactors
+- retrieving data from the following tables:
+    - tblAppointment
+    - tblAppointment_Status
+    - tblPatient
+    - tblPatient_RiskFactors
+    - tblRiskFactors
 
 From the initial design:
 
