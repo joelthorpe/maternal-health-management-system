@@ -1,0 +1,37 @@
+Main Page (00-MainPage.html)
+    - select the users role
+  Links to either:
+    - Clinic Administrator Area (01-ClinicAdminDashboard.html)
+    - Midwives Area (05-MidwifeDashboard.html)
+
+Clinic Administrator Section (01-ClinicAdminDashboard.html)
+    - this will be a menu page/hub (dashboard)
+  From here a user can go to:
+    - manage clinics (02-ManageClinics.html)
+    - manage staff (03-ManageStaff.html)
+    - clinic reports (04-ClinicReports.html)
+
+Midwives Section (05-MidwifeDashboard.html)
+    - this will be a menu page/hub (dashboard)
+  From here a user can go to:
+    - manage patients (06-ManagePatients.html)
+    - manage appointments (07-ManageAppointments.html)
+    - manage risk factors (08-ManageRiskFactors.html)
+    - midwife reports (09-MidwifeReports.html)
+
+Flow Diagram:
+Main Page
+│
+├── Clinic Admin Dashboard
+│   ├── Manage Clinics
+│   ├── Manage Staff
+│   └── Clinic Reports
+│
+└── Midwives Dashboard
+    ├── Manage Patients
+    ├── Manage Appointments
+    ├── Manage Risk Factors
+    └── Midwife Reports
+
+
+    

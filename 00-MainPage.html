@@ -5,22 +5,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Maternity Heath Viewer</title>
+  <title>Maternity Heath Management System</title>
   <link rel="stylesheet" href="css\style.css">
 
 </head>
 <body>
-  <div class="switchBar">
-    <a href="01-ClinicAdmin.html">Clinic Administrators View</a>
-    <a href="04-Midwives.html">Midwives View</a>
+  <!-- Navigation Bar -->
+<div class="navbar">
+  <span class="brand">Maternal Care</span>
+  <a href="01-ClinicAdminDashboard.html">Clinic Administrators Dashboard</a>
+  <span class="nav-separator"></span>
+  <a href="05-MidwifeDashboard.html">Midwives Dashboard</a>
+</div>
+
+  <!-- Background Image Section -->
+  <div class="bg-image">
+    <div class="text-box">
+      <h1>Maternal Health Management System</h1>
+      <p>Supporting safer pregnancies and coordinated care</p>
+    </div>
+    <button class="scroll-btn" onclick="scrollToContainer()">
+      ↓ Scroll Down
+    </button>
   </div>
 
-<h1>This is a Heading</h1>
-<p>This is a paragraph.</p>
+<div class="container">
+    <h1>Our Mission</h1>
+    <p>The specific problem that the system aims to address is the high maternal mortality rates across the region.</p>
+    <p>We have been reviewing data from organisations like WHO and UNICEF, and we have noticed that the problem isn't just a lack of medical facilities, but it is also a failure to effectively track and manage high-risk pregnancies across rural clinic locations.</p>
+    <p>Some areas may have regular check-ups for expectant mothers, whereas ones in remote villages may remain unmonitored until complications occur.</p>
+    <h1>SDG Alignment</h1>
+    <p>This system specifically aligns with the UN's Sustainable development goals, in specific number 3 (Good Health and Well-being).</p>
+    <p>My proposed system supports this in a meaningful way as it doesn't just look at statistics, it can actively help clinics manage the antenatal appointments and risk factors to prevent these maternal deaths happening in the first place.</p>
+    <h1>System Features</h1>
+    <p>This system acts as a web-based tracker where medical staff can log patient visits and flag risks related to their pregnancies.</p>
+  </div>
+
+<div class="footer-section">
+  <h1>Authors</h1>
+  <p>Adam McKelvey: adammckelvey7@gmail.com</p>
+  <p>Martin Ou Yang: martinouyang@gmail.com</p>
+  <p>Joel Thorpe: joelthorpe@gmail.com</p>
+  <p>Cameron Minnis: cameronminnis@gmail.com</p>
+  <p>Jonny Reid: jonnyreid@gmail.com</p>
+</div>
 
 <script src="js/script.js"></script>
 <script>
-  
+  function scrollToContainer() {
+    const container = document.querySelector('.container');
+    container.scrollIntoView({ behavior: 'smooth' });
+  }
 </script>
 </body>
 </html>
