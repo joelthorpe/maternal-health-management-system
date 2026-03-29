@@ -69,8 +69,6 @@ const listTable = async(tableName, fieldName, headings) => {
     const sql = `SELECT * FROM ${tableName} ORDER BY ${fieldName}`;
     const result = await runQuery(sql);
 
-    //console.log(result);
-
     // ensures result isn't empty or has no length
     if (!result || !result.data || result.data.length === 0) {
         output.textContent = "No records found.";
@@ -135,9 +133,7 @@ const listTable = async(tableName, fieldName, headings) => {
         deleteBtn.addEventListener("click", async () => {
             // prompts the user if they want to delete the record
             if (!confirm(`Are you sure you want to delete ${row[fieldName]} record in ${tableName}?`)) return;
-            
-            //console.log(tableName, fieldName)
-            
+
             // builds the query and runs it
             const deleteSql = `DELETE FROM ${tableName} WHERE ${fieldName} = '${row[fieldName]}'`;
             const deleteResult = await runQuery(deleteSql);
@@ -174,8 +170,6 @@ const handleFormSubmit = async ({formSelector, tableName, fields}) => {
             formData[field] = value;
         }
 
-        //console.log(formData);
-
         // query
         // gets keys and values from the array
         const fieldNames = Object.keys(formData);
@@ -192,7 +186,6 @@ const handleFormSubmit = async ({formSelector, tableName, fields}) => {
 
         const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
 
-        //console.log(sql);
         const result = await runQuery(sql);
 
         if (result && result.success) {
@@ -238,7 +231,6 @@ const populateDropdown = async (querySelector, fields, tableName, orderBy, defau
             str += row[field] + " ";
         }
         option.textContent = str.trim();
-        //option.textContent = `${row[fields[0]]} - ${row[fields[1]]} ${row[fields[2]]}`;
         select.appendChild(option);
     }
 
