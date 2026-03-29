@@ -10,18 +10,36 @@
 
 </head>
 <body>
+
   <div class="navbar">
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="05-MidwifeDashboard.html">Midwife Dashboard</a>
     <span class="nav-separator"></span>
-    <a href="06-ManagePatients.html">Patients</a>
-    <a href="07-ManageAppointments.html">Appointments</a>
-    <a href="08-ManageRiskFactors.html">Risk Factors</a>
+    <ul>
+      <li><a href="#">Manage Patients</a>
+        <ul class="dropdown">
+        <li><a href="06-ManagePatients.html">Add Patients</a></li>
+        <li><a href="06.1-ManagePatients.html">Delete Patients</a></li>
+        <li><a href="06.2-ManagePatients.html">Update Patients</a></li>
+      </ul>
+      </li>
+      <li><a href="#">Manage Appointments</a>
+      <ul class="dropdown">
+        <li><a href="07-ManageAppointments.html">Add Appointments</a></li>
+        <li><a href="07.1-ManageAppointments.html">Delete Appointments</a></li>
+        <li><a href="07.2-ManageAppointments.html">Update Appointments</a></li>
+      </ul></li>
+
+      <li><a href="#">Manage Risk Factors</a>
+      <ul class="dropdown">
+        <li><a href="08-ManageRiskFactors.html">Add Risks</a></li>
+        <li><a href="08.1-ManageRiskFactors.html">Delete Risks</a></li>
+        <li><a href="08.2-ManageRiskFactors.html">Update Risks</a></li>
+      </ul></li>
+    </ul>
     <a href="09-MidwifeReports.html">Reports</a>
   </div>
 
-<h1>This is a Heading</h1>
-<p>This is a paragraph.</p>
 
 <script src="js/script.js"></script>
 <script>
