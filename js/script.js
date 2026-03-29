@@ -1,6 +1,9 @@
 /* Put your username in place of the web address to connect to the database
 e.g. https://zouyang03.webhosting1.eeecs.qub.ac.uk/dbConnector.php
 */
+
+
+// This Method will be the main method used to run queries 
 const runQuery = async (sql) => {
     const url = "https://USERNAME.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
 
@@ -22,11 +25,10 @@ const runQuery = async (sql) => {
         // Converts the response to JSON format
         const result = await response.json();
 
-
+        // Returns the message/data retrieved
         return result;
     }
-    catch(error)
-    {
+    catch(error){
         console.log(error.message);
     }
 } 
