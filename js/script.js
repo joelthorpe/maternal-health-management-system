@@ -6,6 +6,7 @@ const runQuery = async (sql) => {
 
     try{
 
+        // This sends the SQL query to the database
         const response = await fetch(url, {
             method: "POST",
             body: new URLSearchParams({
@@ -17,13 +18,16 @@ const runQuery = async (sql) => {
             throw new Error("HTTP error " + response.status);
         }
 
+
+        // Converts the response to JSON format
         const result = await response.json();
+
 
         return result;
     }
     catch(error)
     {
-        output.textContent = error.message;
+        console.log(error.message);
     }
 } 
 
