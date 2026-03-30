@@ -127,6 +127,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv) =>{
                 if(deleteResult && deleteResult.success)
                 {
                     alert(`Successfully deleted ${data[fields[0]]} from ${SQLtableName}`);
+                    location.reload(); // Reloads the page
                 }
 
                 if(deleteResult && deleteResult.error)
@@ -289,10 +290,10 @@ const validateStaff = (staff) => {
       */
 
       // Actual variables the user will enter and we need to validate
-      const staffForename = typeof staff.staffForename === "string" ? staff.staffForename.trim() : "";
-      const staffSurname = typeof staff.staffSurname === "string" ? staff.staffSurname.trim() : "";
+      const staffForename = typeof staff.StaffForename === "string" ? staff.StaffForename.trim() : "";
+      const staffSurname = typeof staff.StaffSurname === "string" ? staff.StaffSurname.trim() : "";
 
-      const staffDOB = Date(staff.staffDOB);
+      const staffDOB = new Date(staff.StaffDOB);
       
       
 
@@ -316,6 +317,6 @@ const validateStaff = (staff) => {
         return "Staff Surname must be 150 characters or fewer.";
       }
 
-      return "";
+      return "PASS";
     }
 
