@@ -329,3 +329,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
 });
+
+const validateClinic = (clinic) => {
+    if (!clinic || typeof clinic !== "object") {
+      return "Clinic details are required.";
+    }
+
+    const clinicID = clinic.clinicID;
+    const regionID = clinic.regionID;
+    const clinicName = typeof clinic.clinicName === "string" ? clinic.clinicName.trim() : "";
+    const clinicCapacity = Number(clinic.clinicCapacity);
+
+    if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
+      return "The Clinic capacity must be greater than";
+    }
+
+    if (!clinicName) {
+      return "Clinic name is required.";
+    }
+
+    if (clinicName.length > 150) {
+      return "Clinic name must be 150 characters or fewer.";
+    }
+
+    return "";
+  }
