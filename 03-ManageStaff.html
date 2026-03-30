@@ -77,11 +77,31 @@
             <!-- Edit sends details to the add patient form to allow editing - unhides cancel button -->
         </div>
     </div>
+    <div id="actionResult"></div>
   </div>
 
 <script src="js/script.js"></script>
 <script>
-  
+
+  /////////////// PARAMETERS ////////////////
+
+  // Select the div which the table of data will go into
+  const divElement = document.getElementById("tblOutput");
+  const messageDiv = document.getElementById("actionResult");
+  const tableName = "tblStaff";
+
+  // A portion of code that is ran when the web is loaded
+  document.addEventListener("DOMContentLoaded", async () => {
+    
+    // Call the method to fill the div with data
+    fillTable(divElement,tableName,["StaffID","ClinicID","RoleID","StaffForename","StaffSurname","StaffDOB","StaffEmail","StaffPhoneNo"], messageDiv);
+    // Fills the dropdown with the specified htmlSelectElement and with the field and table name
+    createDropdownOptions(document.getElementById("ClinicID"), "ClinicID", "tblClinic");
+    createDropdownOptions(document.getElementById("RoleID"), "RoleID", "tblRole");
+    // Fills the ClinicID input with the next ClinicID available
+    presentLatestID(document.getElementById("StaffID"),tableName, "StaffID" ,"S");
+  })
+
 </script>
 </body>
 </html>

@@ -155,12 +155,26 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv) =>{
 /* createDropdownOptions is used to create dropdowns for fixed amount of option like for IDs
 - htmlSelectElement: The HTML select block that will be filled with options
 - field: The field that you want the options of e.g. ClinicID would show all the ClinicIDs currently available
+- displayFields: Any additional fields to be displayed alongside the field, mainly used for Staff and Patient Forename + Surname
 - tableName: The table which the field resides in
-*/
-const createDropdownOptions = async (htmlSelectElement, field, tableName)=>{
 
-    let sql = `SELECT ${field} FROM ${tableName} ORDER BY ${field} ASC`
+- Example Format: createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff", ["StaffForename", "StaffSurname"]);
+*/
+const createDropdownOptions = async (htmlSelectElement, field, tableName, displayFields = null)=>{
+    // Gets the relating name field for the table
+    if (!displayFields) {
+        // Ensures the fields are stored within an Array
+        displayFields = [field.replace("ID", "Name")];
+    }
+
+    // Joins the additional fields if more than 1 with the primary field
+    const selectFields = [field, ...displayFields].join(", ");
+
+    let sql = `SELECT ${selectFields} FROM ${tableName} ORDER BY ${field} ASC`
     const result = await runQuery(sql);
+
+    // Clears any existing HTML
+    htmlSelectElement.innerHTML = "";
 
     // Creates the default option for the htmlSelectElement
     const defaultOption = document.createElement("option");
@@ -178,8 +192,16 @@ const createDropdownOptions = async (htmlSelectElement, field, tableName)=>{
         let newOption = document.createElement("option");
         // gets the value of the field e.g. RegionID would be RG01
         newOption.value = data[field];
+
+        // Combines multiple fields if needed (will just loop once and then remove trailing space if not needed)
+        let displayText = "";
+        for (const field of displayFields) {
+            displayText += data[field] + " ";
+        }
+        displayText = displayText.trim(); // Removes the trailing space
+
         // the displayed content is the same as the value 
-        newOption.textContent = data[field];
+        newOption.textContent = `${data[field]} - ${displayText}`;
         // adds the created option to the select html element
         htmlSelectElement.appendChild(newOption);
     }
