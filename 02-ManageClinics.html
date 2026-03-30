@@ -14,12 +14,56 @@
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="01-ClinicAdminDashboard.html">Clinic Admin Dashboard</a>
     <span class="nav-separator"></span>
-    <a href="02-ManageClinics.html">Manage Clinics</a>
-    <a href="03-ManageStaff.html">Manage Staff</a>
+    <ul>
+      <li><a href="#">Manage Clinics</a>
+        <ul class="dropdown">
+        <li><a href="02-ManageClinics.html">Add Clinics</a></li>
+        <li><a href="02.1-ManageClinics.html">Delete Clinics</a></li>
+        <li><a href="02.2-ManageClinics.html">Update Clinics</a></li>
+      </ul>
+      </li>
+      <li><a href="#">Manage Staff</a>
+      <ul class="dropdown">
+        <li><a href="03-ManageStaff.html">Add Staff</a></li>
+        <li><a href="03-ManageStaff.html">Delete Staff</a></li>
+        <li><a href="03-ManageStaff.html">Update Staff</a></li>
+      </ul></li>
+    </ul>
     <a href="04-ClinicReports.html">Reports</a>
   </div>
 
+
   <div class="dashboard-bg">
+    <div class="main layout">
+        <div class="form">
+            <h2>Add a New Clinic</h2>
+            <form id="clinicForm">
+                <!-- Clinic ID input-->
+                <label for="ClinicID">Clinic ID</label>
+                <input type="text" id="ClinicID" maxlength="4" readonly>
+                <!-- Region ID input - change to a drop down -->
+                <label for="RegionID">Region ID</label>
+                <select id="RegionID" required></select>
+                <!-- Clinic Name input-->
+                <label for="ClinicName">Clinic Name</label>
+                <input type="text" id="ClinicName" required>
+                <!-- Clinic Capacity input-->
+                <label for="ClinicCapacity">Clinic Capacity</label>
+                <input type="number" id="ClinicCapacity" value="0" required>
+                
+                <button type="submit" id="btnSubmit">Save Clinic</button>
+                <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
+            </form>
+        </div>
+
+        <div class="form">
+            <h2>List of Clinics</h2>
+            <!-- Clinics Table goes here-->
+            <div id="tblOutput"></div>
+            <!-- Possibly include buttons to edit and delete -->
+            <!-- Edit sends details to the add patient form to allow editing - unhides cancel button -->
+        </div>
+    </div>
   </div>
 
 <script src="js/script.js"></script>
