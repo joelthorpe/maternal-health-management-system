@@ -170,6 +170,7 @@ const handleFormSubmit = async ({formSelector, tableName, fields}) => {
             formData[field] = value;
         }
 
+        
         // query
         // gets keys and values from the array
         const fieldNames = Object.keys(formData);
@@ -178,21 +179,34 @@ const handleFormSubmit = async ({formSelector, tableName, fields}) => {
         console.log(fieldNames);
         console.log(fieldValues);
 
+        if(tableName == "tblClinic")
+        {
+            console.log("This is clinic being ran");
+            const validateResponse = validateClinic(formData);
+
+            if(validateResponse != "PASS"){
+                displayResponse(validateResponse);
+                return;
+            }
+        }
+
+        
+
         // put values into singular quotes
         const formattedValues = fieldValues.map(val => {
             // check to ensure that the value is a number
             return isNaN(val) ? `'${val}'` : val;
         });
 
+
         const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
 
         const result = await runQuery(sql);
 
         if (result && result.success) {
-            alert("Record added successfully.");
-            location.reload();
+            displayResponse("Clinic has been successfully added.");
         } else {
-            alert(result.error);
+            displayResponse(result.error);
         }
     });
 };
@@ -328,29 +342,90 @@ document.addEventListener("DOMContentLoaded", async () => {
         ["ClinicID","RegionID","ClinicName","ClinicCapacity"]
     );
 
+
 });
 
 const validateClinic = (clinic) => {
-    if (!clinic || typeof clinic !== "object") {
-      return "Clinic details are required.";
+      if (!clinic || typeof clinic !== "object") {
+        return "Clinic details are required.";
+      }
+
+      const clinicID = clinic.ClinicID;
+      const regionID = clinic.RegionID;
+      const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
+      const clinicCapacity = Number(clinic.ClinicCapacity);
+
+      if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
+        return "The Clinic capacity must be greater than 0";
+      }
+
+      if (!clinicName) {
+        return "Clinic name is required.";
+      }
+
+      if (clinicName.length > 150) {
+        return "Clinic name must be 150 characters or fewer.";
+      }
+
+      return "PASS";
     }
 
-    const clinicID = clinic.clinicID;
-    const regionID = clinic.regionID;
-    const clinicName = typeof clinic.clinicName === "string" ? clinic.clinicName.trim() : "";
-    const clinicCapacity = Number(clinic.clinicCapacity);
 
-    if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
-      return "The Clinic capacity must be greater than";
+const validateStaff = (staff) => {
+      if (!staff || typeof staff !== "object") {
+        return "Staff details are required.";
+      }
+
+      /* No need to check as it will be forced to be corrected
+      const staffID = staff.staffID;
+      const clinicID = staff.clinicID;
+      const roleID = staff.roleID;
+      const staffPhoneNo = Number(staff.staffPhoneNo);
+      const staffEmail = (staffForename.toLowerCase() + "." + staffSurname.toLowerCase() + "@example.com")
+      */
+
+      // Actual variables the user will enter and we need to validate
+      const staffForename = typeof staff.staffForename === "string" ? staff.staffForename.trim() : "";
+      const staffSurname = typeof staff.staffSurname === "string" ? staff.staffSurname.trim() : "";
+
+      const staffDOB = Date(staff.staffDOB);
+      
+      
+
+      if (staffDOB >= new Date()) {
+        return "Date of birth must be before today's date";
+      }
+
+      if (!staffForename) {
+        return "Staff Forename is required.";
+      }
+
+      if (staffForename.length > 100) {
+        return "Staff Forename must be 100 characters or fewer.";
+      }
+
+      if (!staffSurname) {
+        return "Staff Surname is required.";
+      }
+
+      if (staffSurname.length > 150) {
+        return "Staff Surname must be 150 characters or fewer.";
+      }
+
+      return "";
     }
 
-    if (!clinicName) {
-      return "Clinic name is required.";
-    }
-
-    if (clinicName.length > 150) {
-      return "Clinic name must be 150 characters or fewer.";
-    }
-
-    return "";
-  }
+const displayResponse = (text) => {
+      const output = document.querySelector(".formResult");
+      if(output)
+      {
+        output.textContent = text;
+        output.style.display= "block";
+        output.style.display
+      }
+      else
+      {
+        alert("CODE GONE WRONG");
+      }
+    
+    };
