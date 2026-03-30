@@ -179,18 +179,16 @@ const handleFormSubmit = async ({formSelector, tableName, fields}) => {
         console.log(fieldNames);
         console.log(fieldValues);
 
-        if(tableName == "tblClinic")
-        {
+        // add more rules here for each table name e.g. patients, staff, appointments
+        if (tableName === "tblClinic") {
             console.log("This is clinic being ran");
-            const validateResponse = validateClinic(formData);
+            const validateResponse = validateData(formData, clinicRules);
 
             if(validateResponse != "PASS"){
                 displayResponse(validateResponse);
                 return;
             }
         }
-
-        
 
         // put values into singular quotes
         const formattedValues = fieldValues.map(val => {
@@ -345,87 +343,71 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 });
 
-const validateClinic = (clinic) => {
-      if (!clinic || typeof clinic !== "object") {
-        return "Clinic details are required.";
-      }
-
-      const clinicID = clinic.ClinicID;
-      const regionID = clinic.RegionID;
-      const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
-      const clinicCapacity = Number(clinic.ClinicCapacity);
-
-      if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
-        return "The Clinic capacity must be greater than 0";
-      }
-
-      if (!clinicName) {
-        return "Clinic name is required.";
-      }
-
-      if (clinicName.length > 150) {
-        return "Clinic name must be 150 characters or fewer.";
-      }
-
-      return "PASS";
+/* Allows form inputs to be validated
+    Requires: form data passed as an array (see clinic example), and rule set (set at bottom of file)
+*/
+const validateData = (data, rules) => {
+    // ensures that the data passed is an object and is present
+    if (!data || typeof data !== "object") {
+        return "Data is required";
     }
 
+    // to store the errors caught
+    let errors = [];
 
-const validateStaff = (staff) => {
-      if (!staff || typeof staff !== "object") {
-        return "Staff details are required.";
-      }
+    // loops through every field in the rules list
+    for (const fieldName in rules) {
+        // gets all the rules relating to a field
+        const fieldRules = rules[fieldName]
+        // field values from the form
+        const value = data[fieldName];
+        //console.log("Value: " + value);
 
-      /* No need to check as it will be forced to be corrected
-      const staffID = staff.staffID;
-      const clinicID = staff.clinicID;
-      const roleID = staff.roleID;
-      const staffPhoneNo = Number(staff.staffPhoneNo);
-      const staffEmail = (staffForename.toLowerCase() + "." + staffSurname.toLowerCase() + "@example.com")
-      */
-
-      // Actual variables the user will enter and we need to validate
-      const staffForename = typeof staff.staffForename === "string" ? staff.staffForename.trim() : "";
-      const staffSurname = typeof staff.staffSurname === "string" ? staff.staffSurname.trim() : "";
-
-      const staffDOB = Date(staff.staffDOB);
-      
-      
-
-      if (staffDOB >= new Date()) {
-        return "Date of birth must be before today's date";
-      }
-
-      if (!staffForename) {
-        return "Staff Forename is required.";
-      }
-
-      if (staffForename.length > 100) {
-        return "Staff Forename must be 100 characters or fewer.";
-      }
-
-      if (!staffSurname) {
-        return "Staff Surname is required.";
-      }
-
-      if (staffSurname.length > 150) {
-        return "Staff Surname must be 150 characters or fewer.";
-      }
-
-      return "";
+        // verifies each rule is met that's been outlined in the rules config for the field
+        for (const rule of fieldRules) {
+            // gets the rule test and substitutes the value into it - like an expression
+            if (!rule.test(value)) {
+                // adds to the errors array
+                errors.push(rule.message);
+                break;
+            }
+        }
     }
 
+    // if there have been no errors, return
+    if (errors.length === 0) {
+        return "PASS";
+    }
+
+    return errors.join ("\n"); // concats each entry in the array with line breaks
+}
+
+
+/* Displays the output to the user */
 const displayResponse = (text) => {
-      const output = document.querySelector(".formResult");
-      if(output)
-      {
-        output.textContent = text;
-        output.style.display= "block";
-        output.style.display
-      }
-      else
-      {
-        alert("CODE GONE WRONG");
-      }
-    
-    };
+    const output = document.querySelector(".formResult");
+
+    // if the output class is present in the form
+    if (output) {
+        // change the text of it
+        output.innerText = text;
+        output.style.display = "block";
+    } else {
+        console.log("Missing HTML element")
+    }
+}
+
+/* Rules for each form*/
+
+// Clinic Form Rules
+const clinicRules = {
+    ClinicName: [
+        // 2 rules for the clinic name -> checks that it isn't empty, and that it has 150 chars or less
+        { test: (value) => typeof value === "string" && value.trim() !== "", message: "Clinic name is required." },
+        { test: (value) => typeof value === "string" && value.trim().length <= 150, message: "Clinic name must be 150 characters or fewer." }
+    ],
+    ClinicCapacity: [
+        // Number(value) converts the value stored to a number before checking
+        { test: (value) => Number.isInteger(Number(value)) && Number(value) > 0, message: "The Clinic capacity must be greater than 0." }
+    ]
+};
