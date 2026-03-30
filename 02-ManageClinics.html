@@ -53,8 +53,6 @@
                 
                 <button type="submit" id="btnSubmit">Save Clinic</button>
                 <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
-                <!-- Displays result from submitting the form, can be moved -->
-                <div class="formResult" style="display: none;"></div>
             </form>
         </div>
 
@@ -66,11 +64,30 @@
             <!-- Edit sends details to the add patient form to allow editing - unhides cancel button -->
         </div>
     </div>
+    <div id="actionResult"></div>
   </div>
 
 <script src="js/script.js"></script>
 <script>
-  
+
+  /////////////// PARAMETERS ////////////////
+
+  // Select the div which the table of data will go into
+  const divElement = document.getElementById("tblOutput");
+  const messageDiv = document.getElementById("actionResult");
+  const tableName = "tblClinic";
+
+  // A portion of code that is ran when the web is loaded
+  document.addEventListener("DOMContentLoaded", async () => {
+    
+    // Call the method to fill the div with data
+    fillTable(divElement,tableName,["ClinicID","RegionID","ClinicName","ClinicCapacity"], messageDiv);
+    // Fills the dropdown with the specified htmlSelectElement and with the field and table name
+    createDropdownOptions(document.getElementById("RegionID"), "RegionID", tableName);
+    // Fills the ClinicID input with the next ClinicID available
+    presentLatestID(document.getElementById("ClinicID"),tableName, "ClinicID" ,"C");
+  })
+
 </script>
 </body>
 </html>

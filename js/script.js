@@ -33,381 +33,267 @@ const runQuery = async (sql) => {
     }
 } 
 
-/* Fetch the latest ID value of a table
-    Requires the name of the table, field name, and the primary key prefix
+/* Displays the message on the actual page
+- text: The message you want to display
+- messageDiv: The div which will contain the message, usually the ones with the ID:actionResult
 */
-const generateLatestID = async(tableName, fieldName, prefix) => {
-    // query
-    const sql = `SELECT ${fieldName} FROM ${tableName} ORDER BY ${fieldName} DESC LIMIT 1`;
+const displayMessage = (text, messageDiv) => {
+      messageDiv.textContent = text;
+      messageDiv.style.display = "block";
+    };
+
+/* Fills a DIV with the data of a table
+- divElement: The div html where you want the table to be
+- SQL: The name of the table you are retrieving the data from
+- fields: The name of the fields of the table
+- messageDiv: The div where the response of the message is to be displayed
+              It is usually below the Form and list of a table's data
+*/
+const fillTable = async (divElement, SQLtableName, fields, messageDiv) =>{
+    divElement.innerHTML = "";
+    // tr is created for the first row
+    let tblHeaders = document.createElement("tr");
+    // The actual table which holds the data being created
+    let HTMLtable = document.createElement("table");
+    // The SQL thats going to be ran to get the data and from what table
+    let sql = `SELECT * FROM ${SQLtableName}`;
+    // Runs the sql query to return an array of data
+    let result = await runQuery(sql);
+
+    // Checks that the result is returned properly
+    if (result && result.success && result.data.length > 0) {
+        // The divElement is the div of the page where the table goes
+        divElement.appendChild(HTMLtable);
+        HTMLtable.appendChild(tblHeaders);
+
+        
+
+        // Creates the first row of headers which is based of the fields' name
+        for(let field of fields){
+            let heading = document.createElement("th");
+            heading.textContent = field;
+            tblHeaders.appendChild(heading);
+        }
+
+
+        // Extra Column Header for additional functionality such as deleting/editing data
+        let actionHeading = document.createElement("th");
+        actionHeading.textContent = "Actions";
+        tblHeaders.appendChild(actionHeading);
+
+        // if the result returns something and is successful the following code is ran
+    
+        // first for loop is used to create rows
+        for(let data of result.data)
+        {
+            let newRow = document.createElement("tr");
+
+            // This nested for loop is used to loop through an entity to get its attributes
+            for(let key in data){
+                let newCol = document.createElement("td");
+                // the data[key] gets the other pair value e.g. ClinicID : "C001"
+                newCol.textContent = data[key];
+                //Appends each column to the current row
+                newRow.appendChild(newCol);
+
+
+            }
+
+            // Creating an action column
+            let actionColumn = document.createElement("td");
+            // Creating the delete button and putting it in a tr then the row then the table
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+
+            // Adding Functionality to the button
+            deleteBtn.addEventListener("click", async() =>{
+                // Creates a pop up at the top of the page to confirm the deletion of the clinic
+                // The data[fields[0]] gets the ID of the entity since its the first item in the fields (or should be)
+                const deletionConfirmation = confirm(`Delete ${data[fields[0]]} from ${SQLtableName}`);
+
+                // Code to check if the user confirmed or not
+                if(!deletionConfirmation)
+                {
+                    displayMessage(`${data[fields[0]]} has not been deleted from ${SQLtableName}`, messageDiv);
+                    // This return stops the code here so it doesnt delete it from the table
+                    return;
+                }
+                // Sets the deletion SQL
+                let deleteSql = `DELETE FROM ${SQLtableName} WHERE ${fields[0]} = "${data[fields[0]]}";`;
+
+                // Gets the result from the database
+                let deleteResult = await runQuery(deleteSql);
+
+                if(deleteResult && deleteResult.success)
+                {
+                    alert(`Successfully deleted ${data[fields[0]]} from ${SQLtableName}`);
+                }
+
+                if(deleteResult && deleteResult.error)
+                {
+                    alert(deleteResult.error);
+                }
+
+            })
+
+            // Adding the delete button to the action column
+            actionColumn.appendChild(deleteBtn);
+            // Adding the action column to the table
+            newRow.appendChild(actionColumn);
+            // puts the newly created row in the table
+            HTMLtable.appendChild(newRow);
+        }
+    }
+    else{
+        let errMessage = document.createElement("p");
+        errMessage.textContent = "No data available";
+        divElement.appendChild(errMessage);
+    }
+    
+}
+
+/* createDropdownOptions is used to create dropdowns for fixed amount of option like for IDs
+- htmlSelectElement: The HTML select block that will be filled with options
+- field: The field that you want the options of e.g. ClinicID would show all the ClinicIDs currently available
+- tableName: The table which the field resides in
+*/
+const createDropdownOptions = async (htmlSelectElement, field, tableName)=>{
+
+    let sql = `SELECT ${field} FROM ${tableName} ORDER BY ${field} ASC`
+    const result = await runQuery(sql);
+
+    // Creates the default option for the htmlSelectElement
+    const defaultOption = document.createElement("option");
+    // the actual value of the option
+    defaultOption.value = "";
+    // shows what the option displays
+    defaultOption.textContent = `Select a ${field}`;
+    // adds it to the select to be able to see that option
+    htmlSelectElement.appendChild(defaultOption);
+
+    // this loops through the data returned by the sql query
+    // The data being the field selected returned as a list of objects
+    for (let data of result.data) {
+        // creates a html option
+        let newOption = document.createElement("option");
+        // gets the value of the field e.g. RegionID would be RG01
+        newOption.value = data[field];
+        // the displayed content is the same as the value 
+        newOption.textContent = data[field];
+        // adds the created option to the select html element
+        htmlSelectElement.appendChild(newOption);
+    }
+
+}
+
+
+/* Generates the latest ID 
+- field: The name of the field to show
+- tableName: The table which the field is in
+- prefix: The prefix of a certain ID
+- HTMLInputElement: The actual html input where the data will be shown
+*/
+const presentLatestID = async(HTMLInputElement,tableName, field, prefix) => {
+    // Runs the query to get the latest ID
+    const sql = `SELECT ${field} FROM ${tableName} ORDER BY ${field} DESC LIMIT 1`;
     const result = await runQuery(sql);
 
     let nextID = `${prefix}001`; // assigns to default value if empty
 
-    // ensures data isn't empty
+    // Checks if data was returned and has data
     if (result && result.data && result.data.length > 0) {
         //console.log(result);
-        const lastID = result.data[0][fieldName];
+        const lastID = result.data[0][field];
 
         // extracts number after the prefix and increments it
         const numPart = parseInt(lastID.substring(prefix.length));
         const nextNum = numPart + 1;
 
+        // This code makes it so that the prefix starts with atleast three zeros
         nextID = prefix + nextNum.toString().padStart(3, '0');
     }
 
-    return nextID;
+    // Displaying and setting the value of the ID 
+    HTMLInputElement.value = nextID;
+    HTMLInputElement.textContent = nextID;
 };
 
-/* Populates a table based on the database tablename specified
-    Requies the table name in the DB, the field name (usually primary key field), and headings for the table (as a list)
-*/
-const listTable = async(tableName, fieldName, headings) => {
-    // ensure it is called the same amongst ALl files that require it
-    const output = document.querySelector("#tblOutput");
 
-    // can change this if required, currently grabs all records in table
-    const sql = `SELECT * FROM ${tableName} ORDER BY ${fieldName}`;
-    const result = await runQuery(sql);
 
-    // ensures result isn't empty or has no length
-    if (!result || !result.data || result.data.length === 0) {
-        output.textContent = "No records found.";
-        return;
+
+
+
+
+
+//////////////////////////////////// VALIDATION CODE ///////////////////////
+
+const validateClinic = (clinic) => {
+      if (!clinic || typeof clinic !== "object") {
+        return "Clinic details are required.";
+      }
+
+      const clinicID = clinic.ClinicID;
+      const regionID = clinic.RegionID;
+      const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
+      const clinicCapacity = Number(clinic.ClinicCapacity);
+
+      if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
+        return "The Clinic capacity must be greater than 0";
+      }
+
+      if (!clinicName) {
+        return "Clinic name is required.";
+      }
+
+      if (clinicName.length > 150) {
+        return "Clinic name must be 150 characters or fewer.";
+      }
+
+      return "PASS";
     }
 
-    const table = document.createElement("table");
-    const headerRow = document.createElement("tr");
-    table.appendChild(headerRow);
 
-    // output headings in the order stored in list
-    for (let heading of headings) {
-        const th = document.createElement("th");
-        th.textContent = heading;
-        headerRow.appendChild(th);
+const validateStaff = (staff) => {
+      if (!staff || typeof staff !== "object") {
+        return "Staff details are required.";
+      }
+
+      /* No need to check as it will be forced to be corrected
+      const staffID = staff.staffID;
+      const clinicID = staff.clinicID;
+      const roleID = staff.roleID;
+      const staffPhoneNo = Number(staff.staffPhoneNo);
+      const staffEmail = (staffForename.toLowerCase() + "." + staffSurname.toLowerCase() + "@example.com")
+      */
+
+      // Actual variables the user will enter and we need to validate
+      const staffForename = typeof staff.staffForename === "string" ? staff.staffForename.trim() : "";
+      const staffSurname = typeof staff.staffSurname === "string" ? staff.staffSurname.trim() : "";
+
+      const staffDOB = Date(staff.staffDOB);
+      
+      
+
+      if (staffDOB >= new Date()) {
+        return "Date of birth must be before today's date";
+      }
+
+      if (!staffForename) {
+        return "Staff Forename is required.";
+      }
+
+      if (staffForename.length > 100) {
+        return "Staff Forename must be 100 characters or fewer.";
+      }
+
+      if (!staffSurname) {
+        return "Staff Surname is required.";
+      }
+
+      if (staffSurname.length > 150) {
+        return "Staff Surname must be 150 characters or fewer.";
+      }
+
+      return "";
     }
 
-    // for each key:value pair in the list
-    for (let row of result.data) {
-        const tr = document.createElement("tr");
-
-        for (let key in row) {
-            // check to see if field name includes forename
-            if (key.includes("Forename")) {
-                const td = document.createElement("td");
-                // finds the 'prefix' before forename e.g. patient/staff - better way of doing this?
-                const prefix = key.replace("Forename", "");
-                // gets forename value and surname value and appends
-                td.textContent = `${row[prefix + "Forename"]} ${row[prefix + "Surname"]}`;
-                tr.appendChild(td);
-                continue;
-            }
-            // skips surname field
-            if (key.includes("Surname")) {
-                continue;
-            }
-
-            const td = document.createElement("td");
-            td.textContent = row[key];
-            tr.appendChild(td);
-        }
-
-        const tdAction = document.createElement("td");
-
-        // logic for edit and deletion needs to be done below
-        // edit should send data to form
-        // delete should work based on tblName, fieldName etc
-
-        // edit button
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        tdAction.appendChild(editBtn);
-        editBtn.addEventListener("click", async () => {
-            alert("Add edit functionality - should open the add/edit patient data dialog")
-            modal.showModal();
-        });
-
-        // delete button
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        tdAction.appendChild(deleteBtn);
-        deleteBtn.addEventListener("click", async () => {
-            // prompts the user if they want to delete the record
-            if (!confirm(`Are you sure you want to delete ${row[fieldName]} record in ${tableName}?`)) return;
-
-            // builds the query and runs it
-            const deleteSql = `DELETE FROM ${tableName} WHERE ${fieldName} = '${row[fieldName]}'`;
-            const deleteResult = await runQuery(deleteSql);
-
-            // if successful, tell the user
-            if (deleteResult && deleteResult.success) {
-                alert("Deleted successfully.");
-                location.reload();
-            // else, tell the user
-            } else {
-                alert(deleteResult.error || "Unable to delete record.");
-            }
-            });
-
-        tr.appendChild(tdAction);
-        table.appendChild(tr);
-    }
-
-    output.appendChild(table);
-
-}
-
-/* Handles the submission of the forms
-    Requies the formSelector (form class name), table name in the DB, and the fields to be submitted
-*/
-const handleFormSubmit = async ({formSelector, tableName, fields}) => {
-    formSelector.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const formData = {};
-
-        for (let field of fields) {
-            const value = formSelector.querySelector(`#${field}`).value.trim();
-            formData[field] = value;
-        }
-
-        
-        // query
-        // gets keys and values from the array
-        const fieldNames = Object.keys(formData);
-        const fieldValues = Object.values(formData);
-
-        console.log(fieldNames);
-        console.log(fieldValues);
-
-        // add more rules here for each table name e.g. patients, staff, appointments
-        if (tableName === "tblClinic") {
-            console.log("This is clinic being ran");
-            const validateResponse = validateData(formData, clinicRules);
-
-            if(validateResponse != "PASS"){
-                displayResponse(validateResponse);
-                return;
-            }
-        }
-
-        // put values into singular quotes
-        const formattedValues = fieldValues.map(val => {
-            // check to ensure that the value is a number
-            return isNaN(val) ? `'${val}'` : val;
-        });
-
-
-        const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
-
-        const result = await runQuery(sql);
-
-        if (result && result.success) {
-            displayResponse("Clinic has been successfully added.");
-        } else {
-            displayResponse(result.error);
-        }
-    });
-};
-
-/* Populates the dropdowns in the forms
-    Requires the query selector (form name), fields to fetch for the drop-down, tablename, orderby, and default text (e.g. Select Clinics)
-*/
-const populateDropdown = async (querySelector, fields, tableName, orderBy, defaultText) => {
-    const select = document.querySelector(querySelector);
-
-    const str = fields.join(", ");
-    
-    console.log(str);
-
-    // get data
-    const sql = `SELECT ${str} FROM ${tableName} ORDER BY ${orderBy} ASC`
-    const result = await runQuery(sql);
-
-    console.log(result);
-
-    // clear existing options
-    select.innerHTML = "";
-
-    // default options
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = defaultText;
-    select.appendChild(defaultOption);
-
-    // populate dropdown
-    for (let row of result.data) {
-        const option = document.createElement("option");
-        option.value = row[fields[0]];
-        let str = "";
-        for (let field of fields) {
-            str += row[field] + " ";
-        }
-        option.textContent = str.trim();
-        select.appendChild(option);
-    }
-
-    console.log(result);
-}
-
-/* Fetches the latest available ID value
-    Requires the form name class, table name, field name (usually primary key), prefixes (from primary key), headings for the table, and the fields in the DB and form (must match)
-*/
-const initForm = async (form, tableName, fieldName, prefix, tblHeadings, fields) => {
-    const formSelector = document.querySelector(form)
-    // ensures that it exists before trying to populate
-    if (formSelector) {
-        formSelector.reset();
-        // fetch and set the next available ID automatically
-        const nextID = await generateLatestID(tableName, fieldName, prefix);
-        const idInput = document.querySelector("#" + fieldName);
-        idInput.value = nextID;
-
-        // NOTE: populate the below with all other dropdown options...
-        if (document.querySelector("#ClinicID")) {
-            await populateDropdown("#ClinicID", ["ClinicID", "ClinicName"], "tblClinic", "ClinicID", "Select Clinic")
-        }
-        if (document.querySelector("#RoleID")) {
-            await populateDropdown("#RoleID", ["RoleID", "RoleName"], "tblRole", "RoleID", "Select Role")
-        }
-        if (document.querySelector("#StaffID")) {
-            await populateDropdown("#StaffID", ["StaffID", "StaffForename", "StaffSurname"], "tblStaff", "StaffID", "Select Staff")
-        }
-        if (document.querySelector("#PatientID")) {
-            await populateDropdown("#PatientID", ["PatientID", "PatientForename", "PatientSurname"], "tblPatient", "PatientID", "Select Patient")
-        }
-        if (document.querySelector("#AppointmentStatus")) {
-            await populateDropdown("#AppointmentStatus", ["StatusID", "StatusName"], "tblAppointment_Status", "StatusID", "Select Status")
-        }
-        if (document.querySelector("#RegionID")) {
-            await populateDropdown("#RegionID", ["RegionID", "RegionName"], "tblRegion", "RegionID", "Select Region")
-        }
-
-        // create and populate the table
-        listTable(tableName, fieldName, tblHeadings);
-
-        // handle the submission of form
-        handleFormSubmit({
-            formSelector: formSelector,
-            tableName: tableName,
-            fields: fields
-        });
-    }
-};
-
-// Initialisation
-// In here, each table needs initialising for information
-// Format is: form id, table name in db, primary key field in db, prefix of primary key, headings for the tables, and field ids within the form and the database (need to match)
-// NOTE: Might be a better way to represent this, but it works for the time being
-document.addEventListener("DOMContentLoaded", async () => {
-    // initialises the patient table
-    initForm(
-        "#patientForm",
-        "tblPatient",
-        "PatientID",
-        "P",
-        ["ID", "Name", "Clinic", "DOB", "Village", "Email", "Phone No", "Previous Births", "Number of Pregnancies", "Actions"],
-        ["PatientID","PatientForename","PatientSurname","ClinicID","PatientDOB","PatientVillage","PatientEmail","PatientPhoneNo","PatientPreviousBirths","PatientNoOfPregnancies"]
-    );
-
-    // initialises the staff table
-    initForm(
-        "#staffForm",
-        "tblStaff",
-        "StaffID",
-        "S",
-        ["ID", "Clinic", "Role", "Name", "DOB", "Email", "Phone No", "Actions"],
-        ["StaffID","ClinicID","RoleID","StaffForename","StaffSurname","StaffDOB","StaffEmail","StaffPhoneNo"]
-    );
-
-
-    // initialises the appointments table
-    initForm(
-        "#appointmentForm",
-        "tblAppointment",
-        "AppointmentID",
-        "A",
-        ["Appoinment ID", "Staff ID", "Patient ID", "Appointment Date", "Appointment Notes", "Appointment Status", "Actions"],
-        ["AppointmentID","StaffID","PatientID","AppointmentDate","AppointmentNotes","AppointmentStatus"]
-    );
-
-    // initialises the clinic table
-    initForm(
-        "#clinicForm",
-        "tblClinic",
-        "ClinicID",
-        "C",
-        ["Clinic ID", "Region ID", "Clinic Name", "Clinic Capacity", "Actions"],
-        ["ClinicID","RegionID","ClinicName","ClinicCapacity"]
-    );
-
-
-});
-
-/* Allows form inputs to be validated
-    Requires: form data passed as an array (see clinic example), and rule set (set at bottom of file)
-*/
-const validateData = (data, rules) => {
-    // ensures that the data passed is an object and is present
-    if (!data || typeof data !== "object") {
-        return "Data is required";
-    }
-
-    // to store the errors caught
-    let errors = [];
-
-    // loops through every field in the rules list
-    for (const fieldName in rules) {
-        // gets all the rules relating to a field
-        const fieldRules = rules[fieldName]
-        // field values from the form
-        const value = data[fieldName];
-        //console.log("Value: " + value);
-
-        // verifies each rule is met that's been outlined in the rules config for the field
-        for (const rule of fieldRules) {
-            // gets the rule test and substitutes the value into it - like an expression
-            if (!rule.test(value)) {
-                // adds to the errors array
-                errors.push(rule.message);
-                break;
-            }
-        }
-    }
-
-    // if there have been no errors, return
-    if (errors.length === 0) {
-        return "PASS";
-    }
-
-    return errors.join ("\n"); // concats each entry in the array with line breaks
-}
-
-
-/* Displays the output to the user */
-const displayResponse = (text) => {
-    const output = document.querySelector(".formResult");
-
-    // if the output class is present in the form
-    if (output) {
-        // change the text of it
-        output.innerText = text;
-        output.style.display = "block";
-    } else {
-        console.log("Missing HTML element")
-    }
-}
-
-/* Rules for each form*/
-
-// Clinic Form Rules
-const clinicRules = {
-    ClinicName: [
-        // 2 rules for the clinic name -> checks that it isn't empty, and that it has 150 chars or less
-        { test: (value) => typeof value === "string" && value.trim() !== "", message: "Clinic name is required." },
-        { test: (value) => typeof value === "string" && value.trim().length <= 150, message: "Clinic name must be 150 characters or fewer." }
-    ],
-    ClinicCapacity: [
-        // Number(value) converts the value stored to a number before checking
-        { test: (value) => Number.isInteger(Number(value)) && Number(value) > 0, message: "The Clinic capacity must be greater than 0." }
-    ]
-};

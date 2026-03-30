@@ -67,7 +67,19 @@
 
 <script src="js/script.js"></script>
 <script>
-  
+  /////////////// PARAMETERS ////////////////
+
+  // Select the div which the table of data will go into
+  const divElement = document.getElementById("tblOutput");
+  const messageDiv = document.getElementById("actionResult");
+  const tableName = "tblClinic";
+
+  // A portion of code that is ran when the web is loaded
+  document.addEventListener("DOMContentLoaded", async () => {
+    
+    // Call the method to fill the div with data
+    fillTable(divElement,tableName,["ClinicID","RegionID","ClinicName","ClinicCapacity"], messageDiv);
+  })
 </script>
 </body>
 </html>

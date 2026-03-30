@@ -305,6 +305,14 @@ width: 100%;
 background-color: white;
 }
 
+#actionResult{
+  display: none;
+  font-weight: bold;
+  padding: 15px;
+  background:#25497d;
+  border-radius: 8px;
+}
+
 td, th {
 border: 1.5px black solid;
 padding: 10px;
