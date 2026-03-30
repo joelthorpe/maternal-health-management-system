@@ -250,7 +250,6 @@ background: rgba(0, 0, 0, 0.1); /* 40% dark overlay */
 /* Form Styling */
 
 .main.layout {
-  width: 100%;
   display: grid;
   /* Change to percentages? */
   grid-template-columns: 315px 1fr;
@@ -291,11 +290,13 @@ box-sizing: border-box;
 }
 
 button {
+color: black;
 font-weight: bold;
+border-radius: 4px;
+cursor: pointer;
 font-size: 0.9em;
 margin: 2px;
 background:white;
-padding: 5px;
 }
 
 /* Table CSS - taken from W11 lecture */
@@ -313,11 +314,20 @@ background-color: white;
   border-radius: 8px;
 }
 
+/* Table Data and Table Headings */
 td, th {
-border: 1.5px black solid;
-padding: 10px;
+border: 1px grey solid;
+padding: 7px;
 text-align: center;
 color: black;
+font-size: 0.95rem;
+}
+
+/* Heading row for Tables - overrides above */
+th {
+  background-color: #25497d;
+  color: white;
+  text-transform: uppercase;
 }
 
 /* Header bar */

@@ -104,6 +104,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv) =>{
             // Creating the delete button and putting it in a tr then the row then the table
             let deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
+            deleteBtn.style = 'color:rgb(213, 69, 69);' // Makes the button text red
 
             // Adding Functionality to the button
             deleteBtn.addEventListener("click", async() =>{
