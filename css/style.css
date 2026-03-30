@@ -301,12 +301,14 @@ padding: 5px;
 table {
 border-collapse: collapse;
 width: 100%;
+background-color: white;
 }
 
 td, th {
-border: 1px white solid;
-padding: 2px;
+border: 1.5px black solid;
+padding: 10px;
 text-align: center;
+color: black;
 }
 
 /* Header bar */

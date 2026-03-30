@@ -33,6 +33,50 @@
   </div>
 
   <div class="dashboard-bg">
+    <div class="main layout">
+        <div class="form">
+            <h2>Add a New Staff Member</h2>
+            <form id="clinicForm">
+                <!-- Staff ID input-->
+                <label for="StaffID">Staff ID</label>
+                <input type="text" id="StaffID" maxlength="4" readonly>
+                <!-- Clinic ID input - drop down -->
+                <label for="ClinicID">Clinic ID</label>
+                <select id="ClinicID" required></select>
+                <!-- Role ID input - drop down -->
+                <label for="RoleID">Role ID</label>
+                <select id="RoleID" required></select>
+                <!-- Staff Forename input-->
+                <label for="StaffForename">Forename</label>
+                <input type="text" id="StaffForename" required>
+                <!-- Staff Surname input-->
+                <label for="StaffSurname">Surname</label>
+                <input type="text" id="StaffSurname" required>
+                <!-- Staff DOB input-->
+                <label for="StaffDOB">Date of Birth</label>
+                <input type="date" id="StaffDOB" required>
+                <!-- Staff Email input-->
+                <label for="StaffEmail">Email Address</label>
+                <input type="email" id="StaffEmail" required>
+                <!-- Staff Phone No input-->
+                <label for="StaffPhoneNo">Phone Number</label>
+                <input type="text" id="StaffPhoneNo" required>
+                <button type="submit" id="btnSubmit">Save Staff</button>
+
+                <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
+                <!-- Displays result from submitting the form, can be moved -->
+                <div class="formResult" style="display: none;"></div>
+            </form>
+        </div>
+
+        <div class="form">
+            <h2>List of Staff Members</h2>
+            <!-- Staff Table goes here-->
+            <div id="tblOutput"></div>
+            <!-- Possibly include buttons to edit and delete -->
+            <!-- Edit sends details to the add patient form to allow editing - unhides cancel button -->
+        </div>
+    </div>
   </div>
 
 <script src="js/script.js"></script>
