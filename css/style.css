@@ -250,6 +250,7 @@ background: rgba(0, 0, 0, 0.1); /* 40% dark overlay */
 /* Form Styling */
 
 .main.layout {
+  width: 100%;
   display: grid;
   /* Change to percentages? */
   grid-template-columns: 315px 1fr;
