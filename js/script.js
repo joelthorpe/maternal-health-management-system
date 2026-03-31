@@ -266,7 +266,7 @@ const handleFormSubmission = (formElement, fields, tableName, validateFunc, mess
       // Validation happens here - calls the function in script.js specified by the function call
       const validationMessage = validateFunc(formData);
       if (validationMessage !== "PASS") {
-          displayMessage(validationMessage, actionResult);
+          displayMessage(validationMessage, messageDiv);
           return;
       }
 
