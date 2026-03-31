@@ -5,7 +5,7 @@ e.g. https://zouyang03.webhosting1.eeecs.qub.ac.uk/dbConnector.php
 
 // This Method will be the main method used to run queries 
 const runQuery = async (sql) => {
-    const url = "https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
+    const url = "https://USERNAME.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
 
     try{
 
@@ -402,13 +402,21 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
             // Pop up at the top of the page, asking the user if they wish to update the record
             // data[fields[0]] refers to the Primary Key ID of the entity as its usually the first field
             const updateConfirmation = confirm(`Do you wish to update record ${fieldValues[0]}`);
-
+            
+            
             // Code to check if the user confirmed or not
             if(!updateConfirmation)
             {
                 displayMessage(`${fieldValues[0]} has not been updated`, messageDiv);
                 // Call the reset field form
                 resetForm(formName, fields, tableName, primaryKeyPrefix);
+
+                // Removes the cancel button by checking if there are 2 items in the button list
+                if(document.getElementById("btnList").children.length == 2)
+                {
+                    document.getElementById("btnList").removeChild(document.getElementById("btnList").children[1]);
+                }
+
                 // This return stops the code here so it doesnt update the record
                 return;
             }
@@ -433,6 +441,11 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
                 // Refresh the table dynamically
                 fillTable(document.getElementById("tblOutput"), tableName, fields, messageDiv, primaryKeyPrefix, formName);
 
+                // Removes the cancel button by checking if there are 2 items in the button list
+                if(document.getElementById("btnList").children.length == 2)
+                {
+                    document.getElementById("btnList").removeChild(document.getElementById("btnList").children[1]);
+                }
                 // This return stops the code here so it doesnt update the record
                 return;
             } else {
