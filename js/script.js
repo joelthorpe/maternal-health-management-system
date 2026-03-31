@@ -445,7 +445,7 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
 - primaryKeyPrefix: Prefix for the primary key field
 - messageDiv: Div that contains the element where messages are stored - not passing this means you don't want the messageDiv to clear
 */
-const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv) => {
+const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = null) => {
     // Reset form by clearing all field values
     for (let field of fields) {
         formName.querySelector(`#${field}`).value = "";
