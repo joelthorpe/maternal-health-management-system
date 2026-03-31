@@ -322,7 +322,7 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
 
         // Validation happens here - calls the function in script.js specified by the function call
         const validationMessage = validateFunc(formData);
-        if (validationMessage !== "PASS") {
+        if (validationMessage) {
             displayMessage(validationMessage, messageDiv);
             return;
         }
@@ -487,7 +487,7 @@ const validateClinic = (clinic) => {
       return "Clinic name must be 150 characters or fewer.";
     }
 
-    return "PASS";
+    return null;
   }
 
 
@@ -532,12 +532,22 @@ const validateStaff = (staff) => {
         return "Staff Surname must be 150 characters or fewer.";
       }
 
-      return "PASS";
+      return null;
     }
 
 const validateRiskFactors = (riskFactor) => {
-    return "PASS";
+    if (!riskFactor || typeof riskFactor !== "object") {
+      return "Risk Factor details are required.";
+    }
+
+    // If all checks have passed, return null
+    return null;
 }
 const validatePatientRiskFactors = (patientRiskFactor) => {
-    return "PASS";
+    if (!patientRiskFactor || typeof patientRiskFactor !== "object") {
+      return "Patient Risk Factor details are required.";
+    }
+
+    // If all checks have passed, return null
+    return null;
 }
