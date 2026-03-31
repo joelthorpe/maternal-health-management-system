@@ -2,7 +2,6 @@
 e.g. https://zouyang03.webhosting1.eeecs.qub.ac.uk/dbConnector.php
 */
 
-
 // This Method will be the main method used to run queries 
 const runQuery = async (sql) => {
     const url = "https://USERNAME.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
@@ -69,15 +68,12 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
         divElement.appendChild(HTMLtable);
         HTMLtable.appendChild(tblHeaders);
 
-        
-
         // Creates the first row of headers which is based of the fields' name
         for(let field of fields){
             let heading = document.createElement("th");
             heading.textContent = field;
             tblHeaders.appendChild(heading);
         }
-
 
         // Extra Column Header for additional functionality such as deleting/editing data
         let actionHeading = document.createElement("th");
@@ -98,8 +94,6 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                 newCol.textContent = data[key];
                 //Appends each column to the current row
                 newRow.appendChild(newCol);
-
-
             }
 
             // Creating an action column
@@ -159,18 +153,13 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 
             // Adding Functionality to the button
             updateBtn.addEventListener("click", async() =>{
-
-
-                
-                // Makes the cancelbutton appear beside the update button
-                console.log(document.getElementById("btnList").children.length);
                 // checks if there is only the save record button so it doesnt keep adding cancels
                 if(document.getElementById("btnList").children.length == 1)
                 {
                     // Creates the cancel button
                     let cancelBtn = document.createElement("button");
                     cancelBtn.textContent = "Cancel";
-
+                    // Makes the cancel button appear beside the update button
                     document.getElementById("btnList").appendChild(cancelBtn);
 
                     // Cancel button functionality
@@ -184,10 +173,6 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                     })
                 }
                 
-
-                
-
-
                 // Loops through all fields
                 for (let field of fields) {
                     // Sets each forms input value to the corresponding data from the selected record
@@ -282,7 +267,6 @@ const createDropdownOptions = async (htmlSelectElement, field, tableName, displa
 
 }
 
-
 /* Generates the latest ID 
 - field: The name of the field to show
 - tableName: The table which the field is in
@@ -364,7 +348,7 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
 
         // Save Record Logic
         if (document.getElementById("btnSubmit").textContent.includes("Save")) {
-            // Pop up at the top of the page, asking the user if they wish to insert the record
+            // Popup at the top of the page, asking the user if they wish to insert the record
             // data[fields[0]] refers to the Primary Key ID of the entity as its usually the first field
             const insertConfirmation = confirm(`Do you wish to insert record ${fieldValues[0]}`);
 
@@ -402,18 +386,17 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
             // Pop up at the top of the page, asking the user if they wish to update the record
             // data[fields[0]] refers to the Primary Key ID of the entity as its usually the first field
             const updateConfirmation = confirm(`Do you wish to update record ${fieldValues[0]}`);
-            
-            
+
             // Code to check if the user confirmed or not
             if(!updateConfirmation)
             {
+                // Tells the user that the field has not been updated
                 displayMessage(`${fieldValues[0]} has not been updated`, messageDiv);
                 // Call the reset field form
                 resetForm(formName, fields, tableName, primaryKeyPrefix);
 
                 // Removes the cancel button by checking if there are 2 items in the button list
-                if(document.getElementById("btnList").children.length == 2)
-                {
+                if (document.getElementById("btnList").children.length == 2) {
                     document.getElementById("btnList").removeChild(document.getElementById("btnList").children[1]);
                 }
 
