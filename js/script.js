@@ -152,13 +152,16 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
             updateBtn.textContent = "Update";
             updateBtn.style = 'color:rgb(12, 133, 67);' // Makes the button text green
 
+
+            // Creating a cancel button incase the user wants to cancel updating the specified field
+            let cancelBtn = document.createElement("button");
+            cancelBtn.textContent = "Cancel";
+
             // Adding Functionality to the button
             updateBtn.addEventListener("click", async() =>{
 
 
-                // Creating a cancel button incase the user wants to cancel updating the specified field
-                let cancelBtn = document.createElement("button");
-                cancelBtn.textContent = "Cancel";
+                
                 // Makes the cancelbutton appear beside the update button
                 document.getElementById("btnList").appendChild(cancelBtn);
 
