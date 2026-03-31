@@ -299,6 +299,14 @@ margin: 2px;
 background:white;
 }
 
+#btnList{
+  padding:0px;
+  margin: 0px;
+  display:flex;
+  gap:20px;
+  list-style: none;
+}
+
 /* Table CSS - taken from W11 lecture */
 table {
 border-collapse: collapse;

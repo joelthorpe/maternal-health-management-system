@@ -154,6 +154,24 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 
             // Adding Functionality to the button
             updateBtn.addEventListener("click", async() =>{
+
+
+                // Creating a cancel button incase the user wants to cancel updating the specified field
+                let cancelBtn = document.createElement("button");
+                cancelBtn.textContent = "Cancel";
+                // Makes the cancelbutton appear beside the update button
+                document.getElementById("btnList").appendChild(cancelBtn);
+
+                cancelBtn.addEventListener("click", async() =>{
+                    // Removes the cancel button from the list of buttons to make it 'disappear'
+                    document.getElementById("btnList").removeChild(cancelBtn);
+                    // Resets the form
+                    resetForm(formName, fields, SQLtableName, primaryKeyPrefix); // Refreshes the form
+                    // Makes the Pop up at the top disappear
+                    messageDiv.style = `display: None;`;
+                })
+
+
                 // Loops through all fields
                 for (let field of fields) {
                     // Sets each forms input value to the corresponding data from the selected record
@@ -170,7 +188,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                 document.getElementById("btnSubmit").textContent = "Update Record";
 
                 // Tell the user they are currently editing the data record - based on primary key value
-                displayMessage(`Currently editing: ${data[fields[0]]}`, messageDiv)
+                displayMessage(`Currently editing: ${data[fields[0]]}`, messageDiv);
             })
 
             // Adding the update button to the action column
