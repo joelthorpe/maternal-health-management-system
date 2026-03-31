@@ -163,16 +163,29 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 
                 
                 // Makes the cancelbutton appear beside the update button
-                document.getElementById("btnList").appendChild(cancelBtn);
+                console.log(document.getElementById("btnList").children.length);
+                // checks if there is only the save record button so it doesnt keep adding cancels
+                if(document.getElementById("btnList").children.length == 1)
+                {
+                    // Creates the cancel button
+                    let cancelBtn = document.createElement("button");
+                    cancelBtn.textContent = "Cancel";
 
-                cancelBtn.addEventListener("click", async() =>{
-                    // Removes the cancel button from the list of buttons to make it 'disappear'
-                    document.getElementById("btnList").removeChild(cancelBtn);
-                    // Resets the form
-                    resetForm(formName, fields, SQLtableName, primaryKeyPrefix); // Refreshes the form
-                    // Makes the Pop up at the top disappear
-                    messageDiv.style = `display: None;`;
-                })
+                    document.getElementById("btnList").appendChild(cancelBtn);
+
+                    // Cancel button functionality
+                    cancelBtn.addEventListener("click", async() =>{
+                        // Removes the cancel button from the list of buttons to make it 'disappear'
+                        document.getElementById("btnList").removeChild(cancelBtn);
+                        // Resets the form
+                        resetForm(formName, fields, SQLtableName, primaryKeyPrefix); // Refreshes the form
+                        // Makes the Pop up at the top disappear
+                        messageDiv.style = `display: None;`;
+                    })
+                }
+                
+
+                
 
 
                 // Loops through all fields
