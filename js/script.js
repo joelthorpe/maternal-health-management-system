@@ -280,7 +280,7 @@ const presentLatestID = async(HTMLInputElement,tableName, field, prefix) => {
 - formName: The HTML form element to be handled
 - fields: Array of field IDs (strings) that exist in the form
 - tableName: The name of the database table inserting data into
-- prefix: Prefix for the primary key field
+- primaryKeyPrefix: Prefix for the primary key field
 - validateFunc: Function to pass in that validates the form data
 - actionResult: Div that contains the element where messages are stored
 */
@@ -405,6 +405,12 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
     });
 }
 
+/* Handles clearing the form of data, often used throughout INSERTION and UPDATE logic
+- formName: The HTML form element to be handled
+- fields: Array of field IDs (strings) that exist in the form
+- tableName: The name of the database table inserting data into
+- primaryKeyPrefix: Prefix for the primary key field
+*/
 const resetForm = (formName, fields, tableName, primaryKeyPrefix) => {
     // Reset form by clearing all field values
     for (let field of fields) {

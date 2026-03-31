@@ -84,6 +84,7 @@
   const formName = document.getElementById("clinicForm");
   const fields = ["ClinicID","RegionID","ClinicName","ClinicCapacity"];
   const tableName = "tblClinic";
+  const primaryKeyPrefix = "C";
 
   // A portion of code that is ran when the web is loaded
   document.addEventListener("DOMContentLoaded", async () => {
@@ -93,7 +94,9 @@
     // Fills the dropdown with the specified htmlSelectElement and with the field and table name
     createDropdownOptions(document.getElementById("RegionID"), "RegionID", "tblRegion");
     // Fills the ClinicID input with the next ClinicID available
-    presentLatestID(document.getElementById("ClinicID"),tableName, "ClinicID" ,"C");
+    presentLatestID(document.getElementById("ClinicID"), tableName, "ClinicID", primaryKeyPrefix);
+
+    handleFormSubmission(formName, fields, tableName, primaryKeyPrefix, validateClinic, messageDiv);
   })
 
 </script>
