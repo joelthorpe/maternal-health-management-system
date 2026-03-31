@@ -493,7 +493,7 @@ const validateClinic = (clinic) => {
     }
 
     if (clinicCapacity > 150) {
-      return "The Clinic capacity must be less than 150";
+      return "Maximum clinic capacity is 150";
     }
 
     if (!clinicName) {
