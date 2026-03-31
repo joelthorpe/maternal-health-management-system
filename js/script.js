@@ -37,8 +37,9 @@ const runQuery = async (sql) => {
 - messageDiv: The div which will contain the message, usually the ones with the ID:actionResult
 */
 const displayMessage = (text, messageDiv) => {
-      messageDiv.textContent = text;
-      messageDiv.style.display = "block";
+    messageDiv.textContent = "";
+    messageDiv.textContent = text;
+    messageDiv.style.display = "block";
     };
 
 /* Fills a DIV with the data of a table
@@ -129,7 +130,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                 {
                     displayMessage(`Successfully deleted ${data[fields[0]]} from ${SQLtableName}`,messageDiv);
                     fillTable(divElement, SQLtableName, fields, messageDiv); // Refreshes the table
-                    resetForm(formName, fields, SQLtableName, primaryKeyPrefix); // Refreshes the form
+                    resetForm(formName, fields, SQLtableName, primaryKeyPrefix, messageDiv); // Refreshes the form
                 }
 
                 if(deleteResult && deleteResult.error)
@@ -167,9 +168,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                         // Removes the cancel button from the list of buttons to make it 'disappear'
                         document.getElementById("btnList").removeChild(cancelBtn);
                         // Resets the form
-                        resetForm(formName, fields, SQLtableName, primaryKeyPrefix); // Refreshes the form
-                        // Makes the Pop up at the top disappear
-                        messageDiv.style = `display: None;`;
+                        resetForm(formName, fields, SQLtableName, primaryKeyPrefix, messageDiv); // Refreshes the form
                     })
                 }
                 
@@ -304,7 +303,7 @@ const presentLatestID = async(HTMLInputElement,tableName, field, prefix) => {
 - tableName: The name of the database table inserting data into
 - primaryKeyPrefix: Prefix for the primary key field
 - validateFunc: Function to pass in that validates the form data
-- actionResult: Div that contains the element where messages are stored
+- messageDiv: Div that contains the element where messages are stored
 */
 const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, validateFunc, messageDiv) => {
     // Handles Form Submission
@@ -357,7 +356,7 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
             {
                 displayMessage(`${fieldValues[0]} has not been inserted`, messageDiv);
                 // Call the reset form function to clear the field values
-                resetForm(formName, fields, tableName, primaryKeyPrefix);
+                resetForm(formName, fields, tableName, primaryKeyPrefix, messageDiv);
                 // This return stops the code here so it doesnt update the record
                 return;
             }
@@ -369,10 +368,10 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
             // If the query is successful, tell the user
             if (result && result.success) {
                 // Let the user know that the record was updated successfully
-                alert(`Record ${fieldValues[0]} was inserted successfully.`);
+                displayMessage(`Record ${fieldValues[0]} was inserted successfully.`, messageDiv);
                 
                 // Call the reset form function to clear the field values
-                resetForm(formName, fields, tableName, primaryKeyPrefix);
+                resetForm(formName, fields, tableName, primaryKeyPrefix, messageDiv);
                 // Refresh the table dynamically
                 fillTable(document.getElementById("tblOutput"), tableName, fields, messageDiv, primaryKeyPrefix, formName);
 
@@ -393,7 +392,7 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
                 // Tells the user that the field has not been updated
                 displayMessage(`${fieldValues[0]} has not been updated`, messageDiv);
                 // Call the reset field form
-                resetForm(formName, fields, tableName, primaryKeyPrefix);
+                resetForm(formName, fields, tableName, primaryKeyPrefix, messageDiv);
 
                 // Removes the cancel button by checking if there are 2 items in the button list
                 if (document.getElementById("btnList").children.length == 2) {
@@ -417,10 +416,10 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
             // If the query is successful, tell the user
             if (result && result.success) {
                 // Let the user know that the record was updated successfully
-                alert(`Record ${fieldValues[0]} was updated successfully.`);
+                displayMessage(`Record ${fieldValues[0]} was updated successfully.`, messageDiv);
 
                 // Call the reset field form
-                resetForm(formName, fields, tableName, primaryKeyPrefix);
+                resetForm(formName, fields, tableName, primaryKeyPrefix, messageDiv);
                 // Refresh the table dynamically
                 fillTable(document.getElementById("tblOutput"), tableName, fields, messageDiv, primaryKeyPrefix, formName);
 
@@ -444,8 +443,9 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
 - fields: Array of field IDs (strings) that exist in the form
 - tableName: The name of the database table inserting data into
 - primaryKeyPrefix: Prefix for the primary key field
+- messageDiv: Div that contains the element where messages are stored - not passing this means you don't want the messageDiv to clear
 */
-const resetForm = (formName, fields, tableName, primaryKeyPrefix) => {
+const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv) => {
     // Reset form by clearing all field values
     for (let field of fields) {
         formName.querySelector(`#${field}`).value = "";
@@ -456,6 +456,16 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix) => {
 
     // Changes text on the button to read "Save Record" (default text)
     document.getElementById("btnSubmit").textContent = "Save Record";
+
+    if (messageDiv) {
+        // Makes the Pop up at the top disappear and clears content
+        // Makes it wait on a timer before disappearing - https://www.w3schools.com/js/js_timing.asp
+        setTimeout(() => {
+            messageDiv.style = `display: None;`;
+            messageDiv.textContent = "";
+        }, 5000); // Waits 5 seconds before clearing
+    }
+
 }
 
 
