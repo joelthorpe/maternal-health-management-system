@@ -90,7 +90,7 @@
   document.addEventListener("DOMContentLoaded", async () => {
     
     // Call the method to fill the div with data
-    fillTable(divElement,tableName, fields, messageDiv);
+    fillTable(divElement,tableName, fields, messageDiv, primaryKeyPrefix,formName);
     // Fills the dropdown with the specified htmlSelectElement and with the field and table name
     createDropdownOptions(document.getElementById("RegionID"), "RegionID", "tblRegion");
     // Fills the ClinicID input with the next ClinicID available

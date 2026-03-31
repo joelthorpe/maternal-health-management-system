@@ -48,8 +48,11 @@ const displayMessage = (text, messageDiv) => {
 - fields: The name of the fields of the table
 - messageDiv: The div where the response of the message is to be displayed
               It is usually below the Form and list of a table's data
+- primaryKeyPrefix: The prefix of the ID used e.g. ClinicID C001
+- formName: the HTML form element which is used to do a CRUD function
 */
-const fillTable = async (divElement, SQLtableName, fields, messageDiv) =>{
+const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKeyPrefix, formName) =>{
+    // Clears the HTML inside for refresh
     divElement.innerHTML = "";
     // tr is created for the first row
     let tblHeaders = document.createElement("tr");
@@ -130,8 +133,9 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv) =>{
 
                 if(deleteResult && deleteResult.success)
                 {
-                    alert(`Successfully deleted ${data[fields[0]]} from ${SQLtableName}`);
-                    location.reload(); // Reloads the page
+                    displayMessage(`Successfully deleted ${data[fields[0]]} from ${SQLtableName}`,messageDiv);
+                    fillTable(divElement, SQLtableName, fields, messageDiv); // Refreshes the table
+                    resetForm(formName, fields, SQLtableName, primaryKeyPrefix); // Refreshes the form
                 }
 
                 if(deleteResult && deleteResult.error)
