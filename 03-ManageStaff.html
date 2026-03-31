@@ -100,61 +100,11 @@
     // Fills the dropdown with the specified htmlSelectElement and with the field and table name
     createDropdownOptions(document.getElementById("ClinicID"), "ClinicID", "tblClinic");
     createDropdownOptions(document.getElementById("RoleID"), "RoleID", "tblRole");
-    // Fills the ClinicID input with the next ClinicID available
+    // Fills the StaffID input with the next StaffID available
     presentLatestID(document.getElementById("StaffID"),tableName, "StaffID" ,"S");
 
-    // Handles Form Submission
-    formName.addEventListener("submit", async (event) => {
-      event.preventDefault(); // Prevents page reload
-      
-      // Object to hold form data
-      const formData = {};
-
-      // Populates the formData with key:pair values
-      for (let field of fields) {
-          const value = formName.querySelector(`#${field}`).value.trim();
-          formData[field] = value;
-      }
-
-      // Validation happens here - calls the function in script.js
-      // Change method here to match the validation required
-      const validationMessage = validateStaff(formData);
-      if (validationMessage !== "PASS") {
-          displayMessage(validationMessage, actionResult);
-          return;
-      }
-
-      // Extracts the key and pair values from the object
-      const fieldNames = Object.keys(formData);
-      const fieldValues = Object.values(formData);
-      
-      // Adds singular quotes around values that aren't numbers
-      // Done to prevent errors when inserting into MySQL
-      const formattedValues = [];
-      // Iterates over all the values in the object
-      for (let value of fieldValues) {
-          // If the value is not a number or a phone number (special case)
-          if (isNaN(value)  || (typeof value === "string" && value.startsWith("+"))) {
-              // Add singular quotes around the value
-              formattedValues.push("'" + value + "'");
-          } else {
-              // Else, just submit the value as is
-              formattedValues.push(value);
-          }
-      }
-
-      // Builds the SQL query and runs
-      const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
-      const result = await runQuery(sql);
-
-      // If the query is successful, tell the user
-      if (result && result.success) {
-        alert("Record added successfully.");
-        location.reload(); // Reloads the page
-      } else {
-          alert(result.error);
-      }
-    });
+    // Handles the form submission with validation function
+    handleFormSubmission(formName, fields, tableName, validateStaff, messageDiv);
   })
 
 </script>

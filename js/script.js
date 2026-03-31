@@ -5,7 +5,7 @@ e.g. https://zouyang03.webhosting1.eeecs.qub.ac.uk/dbConnector.php
 
 // This Method will be the main method used to run queries 
 const runQuery = async (sql) => {
-    const url = "https://USERNAME.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
+    const url = "https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
 
     try{
 
@@ -241,6 +241,68 @@ const presentLatestID = async(HTMLInputElement,tableName, field, prefix) => {
     HTMLInputElement.value = nextID;
     HTMLInputElement.textContent = nextID;
 };
+
+/* Handles INSERTION of data into the tables
+- formElement: The HTML form element to be handled
+- fields: Array of field IDs (strings) that exist in the form
+- tableName: The name of the database table inserting data into
+- validateFunc: Function to pass in that validates the form data
+- actionResult: Div that contains the element where messages are stored
+*/
+const handleFormSubmission = (formElement, fields, tableName, validateFunc, messageDiv) => {
+    // Handles Form Submission
+    formElement.addEventListener("submit", async (event) => {
+      event.preventDefault(); // Prevents page reload
+      
+      // Object to hold form data
+      const formData = {};
+
+      // Populates the formData with key:pair values
+      for (let field of fields) {
+          const value = formName.querySelector(`#${field}`).value.trim();
+          formData[field] = value;
+      }
+
+      // Validation happens here - calls the function in script.js
+      // Change method here to match the validation required
+      const validationMessage = validateFunc(formData);
+      if (validationMessage !== "PASS") {
+          displayMessage(validationMessage, actionResult);
+          return;
+      }
+
+      // Extracts the key and pair values from the object
+      const fieldNames = Object.keys(formData);
+      const fieldValues = Object.values(formData);
+      
+      // Adds singular quotes around values that aren't numbers
+      // Done to prevent errors when inserting into MySQL
+      const formattedValues = [];
+      // Iterates over all the values in the object
+      for (let value of fieldValues) {
+          // If the value is not a number or a phone number (special case)
+          if (isNaN(value)  || (typeof value === "string" && value.startsWith("+"))) {
+              // Add singular quotes around the value
+              formattedValues.push("'" + value + "'");
+          } else {
+              // Else, just submit the value as is
+              formattedValues.push(value);
+          }
+      }
+
+      // Builds the SQL query and runs
+      const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
+      const result = await runQuery(sql);
+
+      // If the query is successful, tell the user
+      if (result && result.success) {
+        alert("Record added successfully.");
+        location.reload(); // Reloads the page
+      } else {
+          alert(result.error);
+      }
+    });
+}
 
 
 
