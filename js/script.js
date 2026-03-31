@@ -559,10 +559,10 @@ const validateRiskFactors = (riskFactor) => {
       return "Risk Factor details are required.";
     }
 
-    //////////////// Risk Name Validation: ////////////////
-
     const riskName = riskFactor.RiskName;
     const riskDescription = riskFactor.RiskDescription;
+
+    //////////////// Risk Name Validation: ////////////////
 
     if (typeof riskName !== "string" || riskName.trim() === "") {
         return "Risk Name is required!";
