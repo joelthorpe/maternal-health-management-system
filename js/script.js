@@ -5,7 +5,7 @@ e.g. https://zouyang03.webhosting1.eeecs.qub.ac.uk/dbConnector.php
 
 // This Method will be the main method used to run queries 
 const runQuery = async (sql) => {
-    const url = "https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
+    const url = "https://USERNAME.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
 
     try{
 
@@ -324,7 +324,7 @@ const handleFormSubmission = (formElement, fields, tableName, validateFunc, mess
         }
 
         // Save Record Logic
-        if (document.getElementById("btnSubmit").textContent === "Save Record") {
+        if (document.getElementById("btnSubmit").textContent.includes("Save")) {
             // Builds the SQL query and runs
             const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
             const result = await runQuery(sql);
