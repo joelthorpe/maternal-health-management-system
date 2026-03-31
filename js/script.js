@@ -5,7 +5,7 @@ e.g. https://zouyang03.webhosting1.eeecs.qub.ac.uk/dbConnector.php
 
 // This Method will be the main method used to run queries 
 const runQuery = async (sql) => {
-    const url = "https://USERNAME.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
+    const url = "https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
 
     try{
 
@@ -352,11 +352,11 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
             if (result && result.success) {
                 // Let the user know that the record was updated successfully
                 alert(`Record ${fieldValues[0]} was inserted successfully.`);
+                
                 // Call the reset form function to clear the field values
                 resetForm(formName, fields, tableName, primaryKeyPrefix);
-
-                // TEMP:
-                location.reload();
+                // Refresh the table dynamically
+                fillTable(document.getElementById("tblOutput"), tableName, fields, messageDiv, primaryKeyPrefix, formName);
 
                 // This return stops the code here so it doesnt update the record
                 return;
@@ -393,11 +393,11 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
             if (result && result.success) {
                 // Let the user know that the record was updated successfully
                 alert(`Record ${fieldValues[0]} was updated successfully.`);
+
                 // Call the reset field form
                 resetForm(formName, fields, tableName, primaryKeyPrefix);
-
-                // TEMP:
-                location.reload();
+                // Refresh the table dynamically
+                fillTable(document.getElementById("tblOutput"), tableName, fields, messageDiv, primaryKeyPrefix, formName);
 
                 // This return stops the code here so it doesnt update the record
                 return;
