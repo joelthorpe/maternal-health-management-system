@@ -101,6 +101,9 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv) =>{
 
             // Creating an action column
             let actionColumn = document.createElement("td");
+
+            //////////////////// FORM DELETE LOGIC ////////////////////
+
             // Creating the delete button and putting it in a tr then the row then the table
             let deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
@@ -138,8 +141,39 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv) =>{
 
             })
 
+            //////////////////// FORM UPDATE LOGIC ////////////////////
+            
+            // Creating the UPDATE button and putting it in a tr then the row then the table
+            let updateBtn = document.createElement("button");
+            updateBtn.textContent = "Update";
+            updateBtn.style = 'color:rgb(12, 133, 67);' // Makes the button text green
+
+            // Adding Functionality to the button
+            updateBtn.addEventListener("click", async() =>{
+                // Loops through all fields
+                for (let field of fields) {
+                    // Sets each forms input value to the corresponding data from the selected record
+                    const input = document.getElementById(field);
+
+                    if (input) {
+                        input.value = data[field];
+                    } else {
+                        displayMessage(`Error - Input for "${field} not found`, messageDiv);
+                    }
+                }
+
+                // Changes text on the button to read Update Record
+                document.getElementById("btnSubmit").textContent = "Update Record";
+
+                // Tell the user they are currently editing the data record - based on primary key value
+                displayMessage(`Currently editing: ${data[fields[0]]}`, messageDiv)
+            })
+
+            // Adding the update button to the action column
+            actionColumn.appendChild(updateBtn);
             // Adding the delete button to the action column
             actionColumn.appendChild(deleteBtn);
+
             // Adding the action column to the table
             newRow.appendChild(actionColumn);
             // puts the newly created row in the table
@@ -252,65 +286,82 @@ const presentLatestID = async(HTMLInputElement,tableName, field, prefix) => {
 const handleFormSubmission = (formElement, fields, tableName, validateFunc, messageDiv) => {
     // Handles Form Submission
     formElement.addEventListener("submit", async (event) => {
-      event.preventDefault(); // Prevents page reload
+        event.preventDefault(); // Prevents page reload
+        
+        // Object to hold form data
+        const formData = {};
+
+        // Populates the formData with key:pair values
+        for (let field of fields) {
+            const value = formName.querySelector(`#${field}`).value.trim();
+            formData[field] = value;
+        }
+
+        // Validation happens here - calls the function in script.js specified by the function call
+        const validationMessage = validateFunc(formData);
+        if (validationMessage !== "PASS") {
+            displayMessage(validationMessage, messageDiv);
+            return;
+        }
+
+        // Extracts the key and pair values from the object
+        const fieldNames = Object.keys(formData);
+        const fieldValues = Object.values(formData);
+        
+        // Adds singular quotes around values that aren't numbers
+        // Done to prevent errors when inserting into MySQL
+        const formattedValues = [];
+        // Iterates over all the values in the object
+        for (let value of fieldValues) {
+            // If the value is not a number or a phone number (special case)
+            if (isNaN(value)  || (typeof value === "string" && value.startsWith("+"))) {
+                // Add singular quotes around the value
+                formattedValues.push("'" + value + "'");
+            } else {
+                // Else, just submit the value as is
+                formattedValues.push(value);
+            }
+        }
+
+        // Save Record Logic
+        if (document.getElementById("btnSubmit").textContent === "Save Record") {
+            // Builds the SQL query and runs
+            const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
+            const result = await runQuery(sql);
+
+            // If the query is successful, tell the user
+            if (result && result.success) {
+                alert("Record added successfully.");
+                location.reload(); // Reloads the page
+            } else {
+                alert(result.error);
+            }
+        // Update Record Logic
+        } else {
+            // Combine field names and corresponding values into "field = value" pairs
+            const valuePairs = [];
+            for (let i = 0; i < fieldNames.length; i++) {
+                valuePairs.push(`${fieldNames[i]} = ${formattedValues[i]}`)
+            }
+
+            // Builds the SQL query and runs
+            const sql = `UPDATE ${tableName} SET ${valuePairs.join(', ')} WHERE ${fieldNames[0]} = ${formattedValues[0]};`;
+            const result = await runQuery(sql);
+
+            // If the query is successful, tell the user
+            if (result && result.success) {
+                alert("Record updated successfully.");
+                location.reload(); // Reloads the page
+            } else {
+                alert(result.error);
+            }
+        }
       
-      // Object to hold form data
-      const formData = {};
-
-      // Populates the formData with key:pair values
-      for (let field of fields) {
-          const value = formName.querySelector(`#${field}`).value.trim();
-          formData[field] = value;
-      }
-
-      // Validation happens here - calls the function in script.js specified by the function call
-      const validationMessage = validateFunc(formData);
-      if (validationMessage !== "PASS") {
-          displayMessage(validationMessage, messageDiv);
-          return;
-      }
-
-      // Extracts the key and pair values from the object
-      const fieldNames = Object.keys(formData);
-      const fieldValues = Object.values(formData);
-      
-      // Adds singular quotes around values that aren't numbers
-      // Done to prevent errors when inserting into MySQL
-      const formattedValues = [];
-      // Iterates over all the values in the object
-      for (let value of fieldValues) {
-          // If the value is not a number or a phone number (special case)
-          if (isNaN(value)  || (typeof value === "string" && value.startsWith("+"))) {
-              // Add singular quotes around the value
-              formattedValues.push("'" + value + "'");
-          } else {
-              // Else, just submit the value as is
-              formattedValues.push(value);
-          }
-      }
-
-      // Builds the SQL query and runs
-      const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
-      const result = await runQuery(sql);
-
-      // If the query is successful, tell the user
-      if (result && result.success) {
-        alert("Record added successfully.");
-        location.reload(); // Reloads the page
-      } else {
-          alert(result.error);
-      }
     });
 }
 
 
-
-
-
-
-
-
-//////////////////////////////////// VALIDATION CODE ///////////////////////
+//////////////////////////////////// VALIDATION CODE ////////////////////////////////////
 
 const validateClinic = (clinic) => {
       if (!clinic || typeof clinic !== "object") {
