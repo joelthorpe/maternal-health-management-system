@@ -54,8 +54,9 @@
                 <label for="RiskDescription">Risk Description</label>
                 <input type="text" id="RiskDescription" required>
                 
-                <button type="submit" id="btnSubmit">Save Record</button>
-                <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
+                <ul id="btnList">
+                  <li><button type="submit" id="btnSubmit">Save Record</button></li>
+                </ul>
             </form>
         </div>
 
@@ -76,10 +77,10 @@
   const primaryKeyPrefix = "RF";
 
   document.addEventListener("DOMContentLoaded", async () => {
-    fillTable(divElement,tableName, fields, messageDiv);
+    fillTable(divElement, tableName, fields, messageDiv, primaryKeyPrefix, formName);
     presentLatestID(document.getElementById("RiskID"), tableName, "RiskID", primaryKeyPrefix);
 
-    handleFormSubmission(formName, fields, tableName, primaryKeyPrefix, validateRiskFactors, messageDiv);
+    handleFormSubmission(divElement, formName, fields, tableName, primaryKeyPrefix, validateRiskFactors, messageDiv);
   })
 
 </script>

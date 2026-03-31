@@ -129,7 +129,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                 if(deleteResult && deleteResult.success)
                 {
                     displayMessage(`Successfully deleted ${data[fields[0]]} from ${SQLtableName}`,messageDiv);
-                    fillTable(divElement, SQLtableName, fields, messageDiv); // Refreshes the table
+                    fillTable(divElement, SQLtableName, fields, messageDiv, primaryKeyPrefix, formName); // Refreshes the table
                     resetForm(formName, fields, SQLtableName, primaryKeyPrefix, messageDiv); // Refreshes the form
                 }
 
@@ -147,17 +147,12 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
             updateBtn.textContent = "Update";
             updateBtn.style = 'color:rgb(12, 133, 67);' // Makes the button text green
 
-
-            // Creating a cancel button incase the user wants to cancel updating the specified field
-            let cancelBtn = document.createElement("button");
-            cancelBtn.textContent = "Cancel";
-
             // Adding Functionality to the button
             updateBtn.addEventListener("click", async() =>{
                 // checks if there is only the save record button so it doesnt keep adding cancels
                 if(document.getElementById("btnList").children.length == 1)
                 {
-                    // Creates the cancel button
+                    // Creating a cancel button incase the user wants to cancel updating the specified field
                     let cancelBtn = document.createElement("button");
                     cancelBtn.textContent = "Cancel";
                     // Makes the cancel button appear beside the update button
@@ -231,6 +226,11 @@ const createDropdownOptions = async (htmlSelectElement, field, tableName, displa
     let sql = `SELECT ${selectFields} FROM ${tableName} ORDER BY ${field} ASC`
     const result = await runQuery(sql);
 
+    if (!result || !result.data || result.data.length <= 0) {
+        // If the data returned from the query being ran is invalid, stop
+        return;
+    }
+
     // Clears any existing HTML
     htmlSelectElement.innerHTML = "";
 
@@ -298,6 +298,7 @@ const presentLatestID = async(HTMLInputElement,tableName, field, prefix) => {
 };
 
 /* Handles INSERTION of data into the tables and UPDATE record logic
+- divElement: The div html where you want the table to be
 - formName: The HTML form element to be handled
 - fields: Array of field IDs (strings) that exist in the form
 - tableName: The name of the database table inserting data into
@@ -305,7 +306,7 @@ const presentLatestID = async(HTMLInputElement,tableName, field, prefix) => {
 - validateFunc: Function to pass in that validates the form data
 - messageDiv: Div that contains the element where messages are stored
 */
-const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, validateFunc, messageDiv) => {
+const handleFormSubmission = (divElement, formName, fields, tableName, primaryKeyPrefix, validateFunc, messageDiv) => {
     // Handles Form Submission
     formName.addEventListener("submit", async (event) => {
         event.preventDefault(); // Prevents page reload
@@ -373,7 +374,7 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
                 // Call the reset form function to clear the field values
                 resetForm(formName, fields, tableName, primaryKeyPrefix, messageDiv);
                 // Refresh the table dynamically
-                fillTable(document.getElementById("tblOutput"), tableName, fields, messageDiv, primaryKeyPrefix, formName);
+                fillTable(divElement, tableName, fields, messageDiv, primaryKeyPrefix, formName);
 
                 // This return stops the code here so it doesnt update the record
                 return;
@@ -421,7 +422,7 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
                 // Call the reset field form
                 resetForm(formName, fields, tableName, primaryKeyPrefix, messageDiv);
                 // Refresh the table dynamically
-                fillTable(document.getElementById("tblOutput"), tableName, fields, messageDiv, primaryKeyPrefix, formName);
+                fillTable(divElement, tableName, fields, messageDiv, primaryKeyPrefix, formName);
 
                 // Removes the cancel button by checking if there are 2 items in the button list
                 if(document.getElementById("btnList").children.length == 2)
@@ -448,7 +449,15 @@ const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, val
 const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = null) => {
     // Reset form by clearing all field values
     for (let field of fields) {
-        formName.querySelector(`#${field}`).value = "";
+        const input = formName.querySelector(`#${field}`);
+        // If there is a input named field value
+        if (input) {
+            // Get the value of the input
+            input.value = "";
+        } else {
+            // Else, tell the user something went wrong
+            alert(`Invalid Field: ${field}`)
+        }
     }
 
     // Generate the latest primary key ID for the form
@@ -461,7 +470,7 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = n
         // Makes the Pop up at the top disappear and clears content
         // Makes it wait on a timer before disappearing - https://www.w3schools.com/js/js_timing.asp
         setTimeout(() => {
-            messageDiv.style = `display: None;`;
+            messageDiv.style.display = "none";
             messageDiv.textContent = "";
         }, 2500); // Waits 2.5 seconds before clearing
     }
