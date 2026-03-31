@@ -479,29 +479,33 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix) => {
 //////////////////////////////////// VALIDATION CODE ////////////////////////////////////
 
 const validateClinic = (clinic) => {
-      if (!clinic || typeof clinic !== "object") {
-        return "Clinic details are required.";
-      }
-
-      const clinicID = clinic.ClinicID;
-      const regionID = clinic.RegionID;
-      const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
-      const clinicCapacity = Number(clinic.ClinicCapacity);
-
-      if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
-        return "The Clinic capacity must be greater than 0";
-      }
-
-      if (!clinicName) {
-        return "Clinic name is required.";
-      }
-
-      if (clinicName.length > 150) {
-        return "Clinic name must be 150 characters or fewer.";
-      }
-
-      return "PASS";
+    if (!clinic || typeof clinic !== "object") {
+      return "Clinic details are required.";
     }
+
+    const clinicID = clinic.ClinicID;
+    const regionID = clinic.RegionID;
+    const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
+    const clinicCapacity = Number(clinic.ClinicCapacity);
+
+    if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
+      return "The Clinic capacity must be greater than 0";
+    }
+
+    if (clinicCapacity > 150) {
+      return "The Clinic capacity must be less than 150";
+    }
+
+    if (!clinicName) {
+      return "Clinic name is required.";
+    }
+
+    if (clinicName.length > 150) {
+      return "Clinic name must be 150 characters or fewer.";
+    }
+
+    return "PASS";
+  }
 
 
 const validateStaff = (staff) => {
