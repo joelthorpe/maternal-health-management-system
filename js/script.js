@@ -463,7 +463,7 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = n
         setTimeout(() => {
             messageDiv.style = `display: None;`;
             messageDiv.textContent = "";
-        }, 5000); // Waits 5 seconds before clearing
+        }, 2500); // Waits 2.5 seconds before clearing
     }
 
 }
@@ -550,12 +550,70 @@ const validateRiskFactors = (riskFactor) => {
       return "Risk Factor details are required.";
     }
 
+    //////////////// Risk Name Validation: ////////////////
+
+    const riskName = riskFactor.RiskName;
+    const riskDescription = riskFactor.RiskDescription;
+
+    if (typeof riskName !== "string" || riskName.trim() === "") {
+        return "Risk Name is required!";
+    }
+
+    // 1000 has been used as a placeholder...
+
+    if (riskName.length > 1000) {
+        return "Risk Name needs to be __ characters or less."
+    }
+
+    //////////////// Risk Description Validation: ////////////////
+
+    if (typeof riskDescription !== "string" || riskDescription.trim() === "") {
+        return "Risk Description is required!"
+    }
+
+    if (riskDescription.length > 1000) {
+        return "Risk Name needs to be __ characters or less."
+    }
+
     // If all checks have passed, return null
     return null;
 }
+
 const validatePatientRiskFactors = (patientRiskFactor) => {
     if (!patientRiskFactor || typeof patientRiskFactor !== "object") {
       return "Patient Risk Factor details are required.";
+    }
+
+    const riskSeverity = Number(patientRiskFactor.RiskSeverity);
+    const dateIdentified = new Date(patientRiskFactor.DateIdentified);
+    const isTreated = Number(patientRiskFactor.IsTreated);
+
+    //////////////// Risk Severity Validation: ////////////////
+
+    if (typeof riskSeverity !== "number") {
+        return "Risk Severity is required!"
+    }
+
+    if (riskSeverity < 0 || riskSeverity > 10) {
+        return "Risk Severity needs to be between 0 and 10 inclusive."
+    }
+
+    //////////////// Date Identified Validation: ////////////////
+
+    // NOTE: Automatically validates date through input type 'date'
+
+    if (dateIdentified >= new Date()) {
+    return "Date Identified must be before todays date!";
+    }
+
+    //////////////// Is Treated Validation: ////////////////
+
+    if (typeof isTreated !== "number") {
+        return "Is Treated is required!"
+    }
+
+    if (isTreated !== 0 && isTreated !== 1) {
+        return "Is Treated needs to be either 0 or 1."
     }
 
     // If all checks have passed, return null
