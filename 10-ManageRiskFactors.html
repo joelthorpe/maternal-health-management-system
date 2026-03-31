@@ -39,11 +39,56 @@
   </div>
 
   <div class="dashboard-bg">
+  <div id="actionResult"></div>
+    <div class="main layout">
+        <div class="form">
+            <h2>Add a New Risk Factor</h2>
+            <form id="riskFactorsForm">
+                <!-- Risk ID input-->
+                <label for="RiskID">Risk ID</label>
+                <input type="text" id="RiskID" maxlength="4" readonly>
+                <!-- Risk Name input-->
+                <label for="RiskName">Risk Name</label>
+                <input type="text" id="RiskName" required>
+                <!-- Risk Description input-->
+                <label for="RiskDescription">Risk Description</label>
+                <input type="text" id="RiskDescription" required>
+                
+                <button type="submit" id="btnSubmit">Save Risk Factor</button>
+                <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
+            </form>
+        </div>
+
+        <div class="form">
+          <h2>List of Risk Factors</h2>
+          <div id="tblOutput"></div>
+        </div>
+    </div>
   </div>
 
 <script src="js/script.js"></script>
 <script>
-  
+
+  /////////////// PARAMETERS ////////////////
+
+  // Select the div which the table of data will go into
+  const divElement = document.getElementById("tblOutput");
+  const messageDiv = document.getElementById("actionResult");
+  const formName = document.getElementById("riskFactorsForm");
+  const fields = ["RiskID","RiskName","RiskDescription"];
+  const tableName = "tblRiskFactors";
+
+  // A portion of code that is ran when the web is loaded
+  document.addEventListener("DOMContentLoaded", async () => {
+    
+    // Call the method to fill the div with data
+    fillTable(divElement,tableName, fields, messageDiv);
+    // Fills the ClinicID input with the next ClinicID available
+    presentLatestID(document.getElementById("RiskID"), tableName, "RiskID" ,"RF");
+    // Handles the form submission with validation function
+    handleFormSubmission(formName, fields, tableName, validateRiskFactors, messageDiv);
+  })
+
 </script>
 </body>
 </html>
