@@ -276,16 +276,17 @@ const presentLatestID = async(HTMLInputElement,tableName, field, prefix) => {
     HTMLInputElement.textContent = nextID;
 };
 
-/* Handles INSERTION of data into the tables
-- formElement: The HTML form element to be handled
+/* Handles INSERTION of data into the tables and UPDATE record logic
+- formName: The HTML form element to be handled
 - fields: Array of field IDs (strings) that exist in the form
 - tableName: The name of the database table inserting data into
+- prefix: Prefix for the primary key field
 - validateFunc: Function to pass in that validates the form data
 - actionResult: Div that contains the element where messages are stored
 */
-const handleFormSubmission = (formElement, fields, tableName, validateFunc, messageDiv) => {
+const handleFormSubmission = (formName, fields, tableName, primaryKeyPrefix, validateFunc, messageDiv) => {
     // Handles Form Submission
-    formElement.addEventListener("submit", async (event) => {
+    formName.addEventListener("submit", async (event) => {
         event.preventDefault(); // Prevents page reload
         
         // Object to hold form data
@@ -325,19 +326,55 @@ const handleFormSubmission = (formElement, fields, tableName, validateFunc, mess
 
         // Save Record Logic
         if (document.getElementById("btnSubmit").textContent.includes("Save")) {
+            // Pop up at the top of the page, asking the user if they wish to insert the record
+            // data[fields[0]] refers to the Primary Key ID of the entity as its usually the first field
+            const insertConfirmation = confirm(`Do you wish to insert record ${fieldValues[0]}`);
+
+            // Code to check if the user confirmed or not
+            if(!insertConfirmation)
+            {
+                displayMessage(`${fieldValues[0]} has not been inserted`, messageDiv);
+                // Call the reset form function to clear the field values
+                resetForm(formName, fields, tableName, primaryKeyPrefix);
+                // This return stops the code here so it doesnt update the record
+                return;
+            }
+
             // Builds the SQL query and runs
             const sql = `INSERT INTO ${tableName} (${fieldNames.join(', ')}) VALUES (${formattedValues.join(', ')});`;
             const result = await runQuery(sql);
 
             // If the query is successful, tell the user
             if (result && result.success) {
-                alert("Record added successfully.");
-                location.reload(); // Reloads the page
+                // Let the user know that the record was updated successfully
+                alert(`Record ${fieldValues[0]} was inserted successfully.`);
+                // Call the reset form function to clear the field values
+                resetForm(formName, fields, tableName, primaryKeyPrefix);
+
+                // TEMP:
+                location.reload();
+
+                // This return stops the code here so it doesnt update the record
+                return;
             } else {
                 alert(result.error);
             }
         // Update Record Logic
         } else {
+            // Pop up at the top of the page, asking the user if they wish to update the record
+            // data[fields[0]] refers to the Primary Key ID of the entity as its usually the first field
+            const updateConfirmation = confirm(`Do you wish to update record ${fieldValues[0]}`);
+
+            // Code to check if the user confirmed or not
+            if(!updateConfirmation)
+            {
+                displayMessage(`${fieldValues[0]} has not been updated`, messageDiv);
+                // Call the reset field form
+                resetForm(formName, fields, tableName, primaryKeyPrefix);
+                // This return stops the code here so it doesnt update the record
+                return;
+            }
+
             // Combine field names and corresponding values into "field = value" pairs
             const valuePairs = [];
             for (let i = 0; i < fieldNames.length; i++) {
@@ -350,14 +387,35 @@ const handleFormSubmission = (formElement, fields, tableName, validateFunc, mess
 
             // If the query is successful, tell the user
             if (result && result.success) {
-                alert("Record updated successfully.");
-                location.reload(); // Reloads the page
+                // Let the user know that the record was updated successfully
+                alert(`Record ${fieldValues[0]} was updated successfully.`);
+                // Call the reset field form
+                resetForm(formName, fields, tableName, primaryKeyPrefix);
+
+                // TEMP:
+                location.reload();
+
+                // This return stops the code here so it doesnt update the record
+                return;
             } else {
                 alert(result.error);
             }
         }
       
     });
+}
+
+const resetForm = (formName, fields, tableName, primaryKeyPrefix) => {
+    // Reset form by clearing all field values
+    for (let field of fields) {
+        formName.querySelector(`#${field}`).value = "";
+    }
+
+    // Generate the latest primary key ID for the form
+    presentLatestID(document.getElementById(fields[0]), tableName, fields[0] , primaryKeyPrefix);
+
+    // Changes text on the button to read "Save Record" (default text)
+    document.getElementById("btnSubmit").textContent = "Save Record";
 }
 
 
@@ -434,5 +492,8 @@ const validateStaff = (staff) => {
     }
 
 const validateRiskFactors = (riskFactor) => {
+    return "PASS";
+}
+const validatePatientRiskFactors = (patientRiskFactor) => {
     return "PASS";
 }

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Manage Risk Factors</title>
+  <title>Manage Patient Risk Factors</title>
   <link rel="stylesheet" href="css\style.css">
 
 </head>
@@ -39,12 +39,63 @@
     <a href="09-MidwifeReports.html">Reports</a>
   </div>
 
-<div class="midwife-dashboard-bg">
-</div>
+  <div class="midwife-dashboard-bg">
+  <div id="actionResult"></div>
+    <div class="main layout">
+        <div class="form">
+            <h2>Add a New Risk Factor</h2>
+            <form id="patientRiskFactorsForm">
+                <!-- Patient Risk ID input-->
+                <label for="PatientRiskID">Patient Risk ID</label>
+                <input type="text" id="PatientRiskID" maxlength="4" readonly>
+                <!-- Patient ID input-->
+                <label for="PatientID">Patient ID</label>
+                <select id="PatientID" required></select>
+                <!-- Risk ID input-->
+                <label for="RiskID">Risk ID</label>
+                <select id="RiskID" required></select>
+                <!-- Risk Severity input-->
+                <label for="RiskSeverity">Risk Severity</label>
+                <input type="number" id="RiskSeverity" value="0" required>
+                <!-- Date Identified input-->
+                <label for="DateIdentified">Date Identified</label>
+                <input type="text" id="DateIdentified" required>
+                <!-- Is Treated input-->
+                <label for="IsTreated">Is Treated</label>
+                <input type="number" id="IsTreated" value="0" required>
+                
+                <button type="submit" id="btnSubmit">Save Patient Risk Factor</button>
+                <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
+            </form>
+        </div>
+
+        <div class="form">
+          <h2>List of Risk Factors</h2>
+          <div id="tblOutput"></div>
+        </div>
+    </div>
+  </div>
 
 <script src="js/script.js"></script>
 <script>
-  
+  const divElement = document.getElementById("tblOutput");
+  const messageDiv = document.getElementById("actionResult");
+  const formName = document.getElementById("patientRiskFactorsForm");
+  const fields = ["PatientRiskID","PatientID","RiskID", "RiskSeverity", "DateIdentified", "IsTreated"];
+  const tableName = "tblPatient_RiskFactors";
+  const primaryKeyPrefix = "PR";
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    fillTable(divElement,tableName, fields, messageDiv);
+    presentLatestID(document.getElementById("PatientRiskID"), tableName, "PatientRiskID", primaryKeyPrefix);
+    
+    createDropdownOptions(document.getElementById("PatientID"), "PatientID", "tblPatient", ["PatientForename", "PatientSurname"]);
+    createDropdownOptions(document.getElementById("RiskID"), "RiskID", "tblRiskFactors");
+
+    handleFormSubmission(formName, fields, tableName, primaryKeyPrefix, validatePatientRiskFactors, messageDiv);
+  })
+
 </script>
+
 </body>
 </html>
