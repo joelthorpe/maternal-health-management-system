@@ -5,7 +5,7 @@ e.g. https://zouyang03.webhosting1.eeecs.qub.ac.uk/dbConnector.php
 
 // This Method will be the main method used to run queries 
 const runQuery = async (sql) => {
-    const url = "https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
+    const url = "https://USERNAME.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
 
     try{
 
