@@ -163,7 +163,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                         // Removes the cancel button from the list of buttons to make it 'disappear'
                         document.getElementById("btnList").removeChild(cancelBtn);
                         // Resets the form
-                        resetForm(formName, fields, SQLtableName, primaryKeyPrefix, messageDiv); // Refreshes the form
+                        resetForm(formName, fields, SQLtableName, primaryKeyPrefix, messageDiv, 0); // Refreshes the form with 0 delay
                     })
                 }
                 
@@ -445,8 +445,9 @@ const handleFormSubmission = (divElement, formName, fields, tableName, primaryKe
 - tableName: The name of the database table inserting data into
 - primaryKeyPrefix: Prefix for the primary key field
 - messageDiv: Div that contains the element where messages are stored - not passing this means you don't want the messageDiv to clear
+- delay: Controls the delay time of the message disappearing - not passing this means you want the default delay
 */
-const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = null) => {
+const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = null, delay = 2000) => {
     // Reset form by clearing all field values
     for (let field of fields) {
         const input = formName.querySelector(`#${field}`);
@@ -466,13 +467,13 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = n
     // Changes text on the button to read "Save Record" (default text)
     document.getElementById("btnSubmit").textContent = "Save Record";
 
-    if (messageDiv) {
+    if (messageDiv !== null) {
         // Makes the Pop up at the top disappear and clears content
         // Makes it wait on a timer before disappearing - https://www.w3schools.com/js/js_timing.asp
         setTimeout(() => {
             messageDiv.style.display = "none";
             messageDiv.textContent = "";
-        }, 2500); // Waits 2.5 seconds before clearing
+        }, delay); // Waits before clearing - uses parameter value 'delay'
     }
 
 }
