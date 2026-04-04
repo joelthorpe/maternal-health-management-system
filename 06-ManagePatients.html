@@ -42,10 +42,87 @@
   </div>
 
 <div class="midwife-dashboard-bg">
+  <div id="actionResult"></div>
+    <div class="main layout">
+        <div class="form">
+            <h2>Add a New Patient</h2>
+            <form id="patientForm">
+                <!-- Patient ID input-->
+                <label for="PatientID">Patient ID</label>
+                <input type="text" id="PatientID" maxlength="4" readonly>
+                <!-- Clinic ID input - drop down -->
+                <label for="ClinicID">Clinic ID</label>
+                <select id="ClinicID" required></select>
+                <!-- Patient Forename input-->
+                <label for="PatientForename">Forename</label>
+                <input type="text" id="PatientForename" required></input>
+                <!-- Patient Surname input-->
+                <label for="PatientSurname">Surname</label>
+                <input type="text" id="PatientSurname" required>
+                <!-- Patient DOB input-->
+                <label for="PatientDOB">Date of Birth</label>
+                <input type="date" id="PatientDOB" required>
+                <!-- Patient Village input-->
+                <label for="PatientVillage">Village</label>
+                <input type="text" id="PatientVillage" required>
+                <!-- Patient Email input-->
+                <label for="PatientEmail">Email Address</label>
+                <input type="email" id="PatientEmail" required>
+                <!-- Patient Phone No input-->
+                <label for="PatientPhoneNo">Phone Number</label>
+                <input type="text" id="PatientPhoneNo" required>
+                <!-- Patient Previous Births No input-->
+                <label for="PatientPreviousBirths">Previous Births</label>
+                <input type="number" id="PatientPreviousBirths" value="0" required>
+                <!-- Patient No Of Pregnancies input-->
+                <label for="PatientNoOfPregnancies">Number of Pregnancies</label>
+                <input type="number" id="PatientNoOfPregnancies" value="0"required>
+
+                <ul id="btnList">
+                  <li><button type="submit" id="btnSubmit">Save Record</button></li>
+                </ul>
+                <!--<button type="submit" id="btnSubmit">Save Record</button>-->
+                
+      
+                <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
+            </form>
+        </div>
+
+        <div class="form">
+            <h2>List of Patients</h2>
+            <!-- Patients Table goes here-->
+            <div id="tblOutput"></div>
+            <!-- Possibly include buttons to edit and delete -->
+            <!-- Edit sends details to the add patient form to allow editing - unhides cancel button -->
+        </div>
+    </div>
 </div>
 
 <script src="js/script.js"></script>
 <script>
+
+  /////////////// PARAMETERS ////////////////
+
+  // Select the div which the table of data will go into
+  const divElement = document.getElementById("tblOutput");
+  const messageDiv = document.getElementById("actionResult");
+  const formName = document.getElementById("patientForm");
+  const fields = ["PatientID","ClinicID","PatientForename","PatientSurname","PatientDOB","PatientVillage","PatientEmail","PatientPhoneNo","PatientPreviousBirths","PatientNoOfPregnancies"];
+  const tableName = "tblPatient";
+  const primaryKeyPrefix = "P";
+
+  // A portion of code that is ran when the web is loaded
+  document.addEventListener("DOMContentLoaded", async () => {
+    
+    // Call the method to fill the div with data
+    fillTable(divElement,tableName, fields, messageDiv, primaryKeyPrefix,formName);
+        // Fills the dropdown with the specified htmlSelectElement and with the field and table name
+    createDropdownOptions(document.getElementById("ClinicID"), "ClinicID", "tblClinic");
+    // Fills the PatientID input with the next PatientID available
+    presentLatestID(document.getElementById("PatientID"), tableName, "PatientID", primaryKeyPrefix);
+
+    handleFormSubmission(divElement, formName, fields, tableName, primaryKeyPrefix, validateClinic, messageDiv);
+  })
   
 </script>
 </body>
