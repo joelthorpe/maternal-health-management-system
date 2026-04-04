@@ -309,12 +309,17 @@ background:white;
 
 /* Table CSS - taken from W11 lecture */
 table {
-border-collapse: collapse;
-width: 100%;
-overflow-x: auto; /* Horizontal scroll bar for the table */
-display: block;
-margin-top: 20px;
-background-color: white;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+  background-color: white;
+}
+
+/* Wrapper to make certain tables appear with a horizontal scroll bar */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto; /* Horizontal scroll bar for the table */
+  margin-top: 20px;
 }
 
 #actionResult{
