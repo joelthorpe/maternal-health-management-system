@@ -214,10 +214,13 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 - Example Format: createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff", ["StaffForename", "StaffSurname"]);
 */
 const createDropdownOptions = async (htmlSelectElement, field, tableName, displayFields = null)=>{
-    // Gets the relating name field for the table
-    if (!displayFields) {
+    // Gets the relating name field for the table if it ends in ID
+    if (!displayFields && field.endsWith("ID")) {
         // Ensures the fields are stored within an Array
         displayFields = [field.replace("ID", "Name")];
+    // If no additional fields are provided and main field is not an ID, just use an empty array
+    } else if (!displayFields) {
+        displayFields = [];
     }
 
     // Joins the additional fields if more than 1 with the primary field
@@ -258,12 +261,18 @@ const createDropdownOptions = async (htmlSelectElement, field, tableName, displa
         }
         displayText = displayText.trim(); // Removes the trailing space
 
-        // the displayed content is the same as the value 
-        newOption.textContent = `${data[field]} - ${displayText}`;
+        // If the variable displayText is not empty - meaning there are additional fields
+        if(displayText) {
+            // Populate dropdown with main field and descriptive fields
+            newOption.textContent = `${data[field]} - ${displayText}`;
+        } else {
+            // Otherwise, just show the main field if it's already descriptive
+            newOption.textContent = `${data[field]}`;
+        }
+
         // adds the created option to the select html element
         htmlSelectElement.appendChild(newOption);
     }
-
 }
 
 /* Generates the latest ID 
