@@ -629,3 +629,82 @@ const validatePatientRiskFactors = (patientRiskFactor) => {
     // If all checks have passed, return null
     return null;
 }
+
+/////////////////////////// Validation For Adding Patients ///////////////////////////////
+const validatePatients = (patient) => {
+      if (!patient || typeof patient !== "object") {
+        return "Patient details are required.";
+      }
+
+      /* No need to check as it will be forced to be corrected
+      const patientID = patient.patientID;
+      const patientPhoneNo = Number(patient.patientPhoneNo);
+      const patientEmail = (patientForename.toLowerCase() + "." + patientSurname.toLowerCase() + "@example.com")
+      */
+
+      // Actual variables the user will enter and we need to validate
+      const patientForename = typeof patient.PatientForename === "string" ? patient.PatientForename.trim() : "";
+      const patientSurname = typeof patient.PatientSurname === "string" ? patient.PatientSurname.trim() : "";
+
+      const patientDOB = new Date(patient.PatientDOB);
+      const PatientPreviousBirths = Number(patient.PatientPreviousBirths);
+      const PatientNoOfPregnancies = Number(patient.PatientNoOfPregnancies);
+
+      if (!Number.isInteger(PatientPreviousBirths) || PatientPreviousBirths < 1) {
+        return "The Number of Previous Births must be greater than 0";
+      }
+      
+      if (!Number.isInteger(PatientNoOfPregnancies) || PatientNoOfPregnancies < 1) {
+        return "The Number of Pregnancies must be greater than 0";
+      }
+
+      if (patientDOB >= new Date()) {
+        return "Date of birth must be before today's date";
+      }
+
+      if (!patientForename) {
+        return "Patient Forename is required.";
+      }
+
+      if (patientForename.length > 100) {
+        return "Patient Forename must be 100 characters or fewer.";
+      }
+
+      if (!patientSurname) {
+        return "Patient Surname is required.";
+      }
+
+      if (patientSurname.length > 150) {
+        return "Patient Surname must be 150 characters or fewer.";
+      }
+
+      return null;
+    }
+
+
+/////////////////////////// Validation For Adding Appointments ///////////////////////////////
+const validateAppointments = (appointment) => {
+      if (!appointment || typeof appointment !== "object") {
+        return "Appointment details are required.";
+      }
+
+      /* No need to check as it will be forced to be corrected
+      const appointmentID = appointment.appointmentID;
+      const staffID = Number(appointment.staffID);
+      const patientID = Number(appointment.patientID);
+      */
+
+      // Actual variables the user will enter and we need to validate
+
+      const AppointmentDate = new Date(appointment.AppointmentDate);
+      
+      
+
+      if (AppointmentDate >= new Date()) {
+        return "Appointment date must be before today's date";
+      }
+
+
+
+      return null;
+    }

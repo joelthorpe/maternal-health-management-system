@@ -41,10 +41,78 @@
   </div>
 
 <div class="midwife-dashboard-bg">
+  <div id="actionResult"></div>
+    <div class="main layout">
+        <div class="form">
+            <h2>Add a New Appointment</h2>
+            <form id="appointmentForm">
+                <!-- Appointment ID input-->
+                <label for="AppointmentID">Appointment ID</label>
+                <input type="text" id="AppointmentID" maxlength="4" readonly>
+                <!-- Staff ID input - drop down -->
+                <label for="StaffID">Staff ID</label>
+                <select id="StaffID" required></select>
+                <!-- Patient ID input - drop down -->
+                <label for="PatientID">Patient ID</label>
+                <select id="PatientID" required></select>
+                <!-- Appointment Date input-->
+                <label for="AppointmentDate">Appointment Date</label>
+                <input type="date" id="AppointmentDate" required>
+                <!-- Appointment Notes input-->
+                <label for="AppointmentNotes">Appointment Notes</label>
+                <input type="text" id="AppointmentNotes" required>
+                <!-- Appointment Status input - drop down -->
+                <label for="AppointmentStatus">Appointment Status</label>
+                <select id="AppointmentStatus" required></select>
+
+                <ul id="btnList">
+                  <li><button type="submit" id="btnSubmit">Save Record</button></li>
+                </ul>
+                <!--<button type="submit" id="btnSubmit">Save Record</button>-->
+                
+      
+                <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
+            </form>
+        </div>
+
+        <div class="form">
+            <h2>List of Appointments</h2>
+            <!-- Appointments Table goes here-->
+            <div id="tblOutput"></div>
+            <!-- Possibly include buttons to edit and delete -->
+            <!-- Edit sends details to the add patient form to allow editing - unhides cancel button -->
+        </div>
+    </div>
 </div>
 
 <script src="js/script.js"></script>
 <script>
+
+  /////////////// PARAMETERS ////////////////
+
+  // Select the div which the table of data will go into
+  const divElement = document.getElementById("tblOutput");
+  const messageDiv = document.getElementById("actionResult");
+  const formName = document.getElementById("appointmentForm");
+  const fields = ["AppointmentID","StaffID","PatientID","AppointmentDate","AppointmentNotes", "AppointmentStatus"];
+  const tableName = "tblAppointment";
+  const primaryKeyPrefix = "A";
+
+  // A portion of code that is ran when the web is loaded
+  document.addEventListener("DOMContentLoaded", async () => {
+    
+    // Call the method to fill the div with data
+    fillTable(divElement,tableName, fields, messageDiv, primaryKeyPrefix,formName);
+    // Fills the dropdown with the specified htmlSelectElement and with the field and table name
+    createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff");
+    createDropdownOptions(document.getElementById("PatientID"), "PatientID", "tblPatient");
+    createDropdownOptions(document.getElementById("AppointmentStatus"), "StatusName", "tblAppointment_Status");
+    // Fills the AppointmentID input with the next AppointmentID available
+    presentLatestID(document.getElementById("AppointmentID"), tableName, "AppointmentID", primaryKeyPrefix);
+
+    handleFormSubmission(divElement, formName, fields, tableName, primaryKeyPrefix, validateClinic, messageDiv);
+  })
+
   
 </script>
 </body>
