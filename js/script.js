@@ -530,7 +530,7 @@ const validateClinic = (clinic) => {
 
     if(result && result.data)
     {
-      console.log(result);
+      // console.log(result);
       /* No need to check as it will be forced to be corrected
       const staffID = staff.staffID;
       const clinicID = staff.clinicID;
