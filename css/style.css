@@ -314,13 +314,26 @@ width: 100%;
 background-color: white;
 }
 
+#tblOutput {
+  max-width: 700px;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 700px;
+  margin: 0 auto;
+}
+
+#tblOutput table {
+  width: auto;
+  min-width: 700px;
+}
+
 #actionResult{
   display: none;
   font-weight: bold;
   padding: 15px;
   background:#25497d;
   border-radius: 8px;
-}
+} 
 
 /* Table Data and Table Headings */
 td, th {

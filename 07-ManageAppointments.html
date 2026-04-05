@@ -104,9 +104,9 @@
     // Call the method to fill the div with data
     fillTable(divElement,tableName, fields, messageDiv, primaryKeyPrefix,formName);
     // Fills the dropdown with the specified htmlSelectElement and with the field and table name
-    createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff");
-    createDropdownOptions(document.getElementById("PatientID"), "PatientID", "tblPatient");
-    createDropdownOptions(document.getElementById("AppointmentStatus"), "StatusName", "tblAppointment_Status");
+    createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff", ["StaffForename", "StaffSurname"]);
+    createDropdownOptions(document.getElementById("PatientID"), "PatientID", "tblPatient", ["PatientForename", "PatientSurname"]);
+    createDropdownOptions(document.getElementById("AppointmentStatus"), "StatusID", "tblAppointment_Status");
     // Fills the AppointmentID input with the next AppointmentID available
     presentLatestID(document.getElementById("AppointmentID"), tableName, "AppointmentID", primaryKeyPrefix);
 
