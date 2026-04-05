@@ -330,7 +330,7 @@ const handleFormSubmission = (divElement, formName, fields, tableName, primaryKe
         }
 
         // Validation happens here - calls the function in script.js specified by the function call
-        const validationMessage = validateFunc(formData);
+        const validationMessage = await validateFunc(formData);
         if (validationMessage) {
             displayMessage(validationMessage, messageDiv);
             return;
