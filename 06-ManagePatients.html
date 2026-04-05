@@ -110,7 +110,7 @@
   const divElement = document.getElementById("tblOutput");
   const messageDiv = document.getElementById("actionResult");
   const formName = document.getElementById("patientForm");
-  const fields = ["PatientID","ClinicID","PatientForename","PatientSurname","PatientDOB","PatientVillage","PatientEmail","PatientPhoneNo","PatientPreviousBirths","PatientNoOfPregnancies"];
+  const fields = ["PatientID","PatientForename","PatientSurname","ClinicID","PatientDOB","PatientVillage","PatientEmail","PatientPhoneNo","PatientPreviousBirths","PatientNoOfPregnancies"];
   const tableName = "tblPatient";
   const primaryKeyPrefix = "P";
 
@@ -124,7 +124,7 @@
     // Fills the PatientID input with the next PatientID available
     presentLatestID(document.getElementById("PatientID"), tableName, "PatientID", primaryKeyPrefix);
 
-    handleFormSubmission(divElement, formName, fields, tableName, primaryKeyPrefix, validateClinic, messageDiv);
+    handleFormSubmission(divElement, formName, fields, tableName, primaryKeyPrefix, validatePatients, messageDiv);
   })
   
 </script>

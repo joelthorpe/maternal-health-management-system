@@ -639,7 +639,7 @@ const validatePatientRiskFactors = (patientRiskFactor) => {
     return null;
 }
 
-/////////////////////////// Validation For Adding Patients ///////////////////////////////
+/////////////////////////// Validation For Patients ///////////////////////////////
 const validatePatients = (patient) => {
       if (!patient || typeof patient !== "object") {
         return "Patient details are required.";

@@ -258,6 +258,7 @@ background: rgba(0, 0, 0, 0.1); /* 40% dark overlay */
 }
 
 .form {
+  max-width: 750px;
   width: 100%;
   min-height: 100%;
   background:#25497d;
@@ -265,6 +266,7 @@ background: rgba(0, 0, 0, 0.1); /* 40% dark overlay */
   border-radius: 8px;
   text-align: center;
   z-index: 10;
+  margin: 0 auto;
 }
 .form form {
 display: flex;
