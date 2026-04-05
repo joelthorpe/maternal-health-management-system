@@ -109,6 +109,51 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 
             // Adding Functionality to the button
             deleteBtn.addEventListener("click", async() =>{
+
+                ////////////// FOREIGN KEY CONSTRAINT CHECKS /////////////
+                // defining ALL the tables we have in the database that include foreign keys
+                const checkTables = ["tblPatient_RiskFactors", "tblAppointment", "tblStaff"];
+
+                // for loop check to check the tables
+                for(let checkTable of checkTables)
+                {
+                    // Makes it so that it doesnt check the current table that we are currently viewing
+                    if(checkTable != SQLtableName)
+                    {
+                        /*
+                        fields[0] - The name of the ID such as "ClinicID"
+                        data[fields[0]] - The value of the ID such as C001
+                        */
+                       console.log(`SELECT ${fields[0]} FROM ${checkTable} WHERE ${fields[0]} = "${data[fields[0]]}";`);
+                        let checkSql = `SELECT ${fields[0]} FROM ${checkTable} WHERE ${fields[0]} = "${data[fields[0]]}";`;
+                        let checkResult = await runQuery(checkSql);
+                        // checks if data was returned with the specfic type of ID and value and also checks if there is actually data returned from that table
+                        if(checkResult && checkResult.data && checkResult.data.length >= 1)
+                        {
+
+                            displayMessage(`Cannot delete ${data[fields[0]]} as it is present in ${checkTable}`, messageDiv);
+                            return;
+                        }
+                        else
+                        {
+                            console.log("no data there");
+                            // Checks if the error is because the field isnt in the table, could be improved 
+                            if(checkResult.error == `Error: Unknown column '${fields[0]}' in 'SELECT'`)
+                            {
+                                // console.log("ID not present in table");
+                            }
+                            else
+                            {
+                                console.log(checkResult.error);
+                            }
+                        }
+
+                    }
+                    
+                }
+
+
+
                 // Creates a pop up at the top of the page to confirm the deletion of the clinic
                 // The data[fields[0]] gets the ID of the entity since its the first item in the fields (or should be)
                 const deletionConfirmation = confirm(`Delete ${data[fields[0]]} from ${SQLtableName}`);
