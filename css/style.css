@@ -251,10 +251,10 @@ background: rgba(0, 0, 0, 0.1); /* 40% dark overlay */
 
 .main.layout {
   display: grid;
-  /* Change to percentages? */
-  grid-template-columns: 315px 1fr;
+  grid-template-columns: 315px minmax(0, 1fr); /* Grid can be less than the table width */
   gap: 25px;
   padding: 20px;
+  width: 100%;
 }
 
 .form {
@@ -309,9 +309,17 @@ background:white;
 
 /* Table CSS - taken from W11 lecture */
 table {
-border-collapse: collapse;
-width: 100%;
-background-color: white;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+  background-color: white;
+}
+
+/* Wrapper to make certain tables appear with a horizontal scroll bar */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto; /* Horizontal scroll bar for the table */
+  margin-top: 20px;
 }
 
 #tblOutput {
