@@ -67,10 +67,10 @@
                 <input type="date" id="StaffDOB" required>
                 <!-- Staff Email input-->
                 <label for="StaffEmail">Email Address</label>
-                <input type="email" id="StaffEmail" required>
+                <input type="email" id="StaffEmail" pattern="[a-z0-9]+\.[a-z0-9]+@[a-z0-9]+\.[a-z]{2,}$" placeholder="forename.surname@example.com" required >
                 <!-- Staff Phone No input-->
                 <label for="StaffPhoneNo">Phone Number</label>
-                <input type="text" id="StaffPhoneNo" required>
+                <input type="text" id="StaffPhoneNo" pattern="\+[0-9].{10,13}" placeholder="+2348011122233" required >
                 <button type="submit" id="btnSubmit">Save Record</button>
 
                 <!--<button type="button" id="btnCancel">Cancel Edit</button>-->
@@ -82,7 +82,9 @@
         <div class="form">
             <h2>List of Staff Members</h2>
             <!-- Staff Table goes here-->
+             <div class="table-wrapper">
             <div id="tblOutput"></div>
+            </div>
             <!-- Possibly include buttons to edit and delete -->
             <!-- Edit sends details to the add patient form to allow editing - unhides cancel button -->
         </div>
@@ -111,9 +113,9 @@
     createDropdownOptions(document.getElementById("RoleID"), "RoleID", "tblRole");
     // Fills the StaffID input with the next StaffID available
     presentLatestID(document.getElementById("StaffID"),tableName, "StaffID" ,"S");
-
     // Handles the form submission with validation function
-    handleFormSubmission(divElement, formName, fields, tableName, validateStaff, messageDiv);
+
+    handleFormSubmission(divElement, formName, fields, tableName, "S" ,validateStaff, messageDiv);
   })
 
 </script>
