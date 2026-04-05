@@ -570,7 +570,7 @@ const validateClinic = (clinic) => {
       return "Staff details are required.";
     }
 
-    const sql = "Select * FROM tblStaff";
+    const sql = `SELECT * FROM tblStaff WHERE StaffID !="${staff.StaffID}";`;
     const result = await runQuery(sql);
 
     if(result && result.data)
@@ -586,7 +586,6 @@ const validateClinic = (clinic) => {
     const staffSurname = typeof staff.StaffSurname === "string" ? staff.StaffSurname.trim() : "";
     const staffPhoneNo = typeof staff.StaffPhoneNo === "string" ? staff.StaffPhoneNo.trim(): "";
     const staffEmail = typeof staff.StaffEmail === "string" ? staff.StaffEmail.trim() : "";
-
     const staffDOB = new Date(staff.StaffDOB);
     
     
