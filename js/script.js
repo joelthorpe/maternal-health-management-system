@@ -520,49 +520,87 @@ const validateClinic = (clinic) => {
   }
 
 
-const validateStaff = (staff) => {
-      if (!staff || typeof staff !== "object") {
-        return "Staff details are required.";
-      }
+  const validateStaff = async (staff) => {
+    if (!staff || typeof staff !== "object") {
+      return "Staff details are required.";
+    }
 
+    const sql = "Select * FROM tblStaff";
+    const result = await runQuery(sql);
+
+    if(result && result.data)
+    {
+      console.log(result);
       /* No need to check as it will be forced to be corrected
       const staffID = staff.staffID;
       const clinicID = staff.clinicID;
       const roleID = staff.roleID;
-      const staffPhoneNo = Number(staff.staffPhoneNo);
-      const staffEmail = (staffForename.toLowerCase() + "." + staffSurname.toLowerCase() + "@example.com")
       */
 
-      // Actual variables the user will enter and we need to validate
-      const staffForename = typeof staff.StaffForename === "string" ? staff.StaffForename.trim() : "";
-      const staffSurname = typeof staff.StaffSurname === "string" ? staff.StaffSurname.trim() : "";
+    const staffForename = typeof staff.StaffForename === "string" ? staff.StaffForename.trim() : "";
+    const staffSurname = typeof staff.StaffSurname === "string" ? staff.StaffSurname.trim() : "";
+    const staffPhoneNo = typeof staff.StaffPhoneNo === "string" ? staff.StaffPhoneNo.trim(): "";
+    const staffEmail = typeof staff.StaffEmail === "string" ? staff.StaffEmail.trim() : "";
 
-      const staffDOB = new Date(staff.StaffDOB);
-      
-      
+    const staffDOB = new Date(staff.StaffDOB);
+    
+    
+    // Staff date of birth validation
 
-      if (staffDOB >= new Date()) {
-        return "Date of birth must be before today's date";
-      }
-
-      if (!staffForename) {
-        return "Staff Forename is required.";
-      }
-
-      if (staffForename.length > 100) {
-        return "Staff Forename must be 100 characters or fewer.";
-      }
-
-      if (!staffSurname) {
-        return "Staff Surname is required.";
-      }
-
-      if (staffSurname.length > 150) {
-        return "Staff Surname must be 150 characters or fewer.";
-      }
-
-      return null;
+    if (staffDOB >= new Date()) {
+      return "Date of birth must be before today's date";
     }
+
+    // Staff forename validation
+
+    if (!staffForename) {
+      return "Staff Forename is required.";
+    }
+
+    if (staffForename.length > 100) {
+      return "Staff Forename must be 100 characters or fewer.";
+    }
+
+
+    // Staff surname validation
+
+    if (!staffSurname) {
+      return "Staff Surname is required.";
+    }
+
+    if (staffSurname.length > 150) {
+      return "Staff Surname must be 150 characters or fewer.";
+    }
+
+    // Staff Email validation
+    for(let data of result.data)
+    {
+      if(data.StaffEmail == staffEmail){
+          return staffEmail + " already exists, staff email must be unique";
+      }
+      //console.log(staffEmail+ " " +data.StaffEmail + "\n");
+    }
+
+    // Staff Phone number validation
+
+    for(let data of result.data)
+    {
+      if(data.StaffPhoneNo == staffPhoneNo){
+
+          return staffPhoneNo + " already exists, phone number must be unique";
+      }
+      // console.log(staffPhoneNo + " " + data.StaffPhoneNo+ "\n");
+    }
+
+    return null;
+
+    }
+    else
+    {
+      return result.error;
+    }
+
+  }
 
 const validateRiskFactors = (riskFactor) => {
     if (!riskFactor || typeof riskFactor !== "object") {
