@@ -736,6 +736,9 @@ const validatePatients = (patient) => {
       // Actual variables the user will enter and we need to validate
       const patientForename = typeof patient.PatientForename === "string" ? patient.PatientForename.trim() : "";
       const patientSurname = typeof patient.PatientSurname === "string" ? patient.PatientSurname.trim() : "";
+      const patientVillage = typeof patient.PatientVillage === "string" ? patient.PatientVillage.trim() : "";
+      const patientEmail = typeof patient.PatientEmail === "string" ? patient.PatientEmail.trim() : "";
+      const patientPhoneNo = typeof patient.PatientPhoneNo === "string" ? patient.PatientPhoneNo.trim() : "";
 
       const patientDOB = new Date(patient.PatientDOB);
       const PatientPreviousBirths = Number(patient.PatientPreviousBirths);
@@ -769,6 +772,32 @@ const validatePatients = (patient) => {
         return "Patient Surname must be 150 characters or fewer.";
       }
 
+      if (!patientVillage) {
+        return "Patient Village is required.";
+      }
+
+      if (patientVillage.length > 100) {
+        return "Patient Village must be 100 characters or fewer.";
+      }
+
+      if (!patientEmail) {
+        return "Patient Email is required.";
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(patientEmail)) {
+        return "Patient Email must be a valid email address.";
+      }
+
+      if (!patientPhoneNo) {
+        return "Patient Phone Number is required.";
+      }
+
+      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+      if (!phoneRegex.test(patientPhoneNo)) {
+        return "Patient Phone Number must be a valid international phone number.";
+      }
+
       return null;
     }
 
@@ -788,14 +817,20 @@ const validateAppointments = (appointment) => {
       // Actual variables the user will enter and we need to validate
 
       const AppointmentDate = new Date(appointment.AppointmentDate);
-      
-      
+      const appointmentNotes = typeof appointment.AppointmentNotes === "string" ? appointment.AppointmentNotes.trim() : "";
+      const appointmentStatus = appointment.AppointmentStatus;
 
-      if (AppointmentDate >= new Date()) {
-        return "Appointment date must be before today's date";
+      if (AppointmentDate <= new Date()) {
+        return "Appointment date must be in the future";
       }
 
+      if (appointmentNotes.length > 500) {
+        return "Appointment Notes must be 500 characters or fewer.";
+      }
 
+      if (!appointmentStatus) {
+        return "Appointment Status is required.";
+      }
 
       return null;
     }
