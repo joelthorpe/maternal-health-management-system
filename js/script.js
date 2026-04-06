@@ -662,8 +662,8 @@ const validateRiskFactors = (riskFactor) => {
 
     // 1000 has been used as a placeholder...
 
-    if (riskName.length > 1000) {
-        return "Risk Name needs to be __ characters or less."
+    if (riskName.length > 100) {
+        return "Risk Name needs to be 100 characters or less."
     }
 
     //////////////// Risk Description Validation: ////////////////
@@ -672,8 +672,8 @@ const validateRiskFactors = (riskFactor) => {
         return "Risk Description is required!"
     }
 
-    if (riskDescription.length > 1000) {
-        return "Risk Name needs to be __ characters or less."
+    if (riskDescription.length > 150) {
+        return "Risk Name needs to be 150 characters or less."
     }
 
     // If all checks have passed, return null
@@ -691,12 +691,12 @@ const validatePatientRiskFactors = (patientRiskFactor) => {
 
     //////////////// Risk Severity Validation: ////////////////
 
-    if (typeof riskSeverity !== "number") {
+    if (typeof riskSeverity !== "number" || isNaN(riskSeverity)) {
         return "Risk Severity is required!"
     }
 
-    if (riskSeverity < 0 || riskSeverity > 10) {
-        return "Risk Severity needs to be between 0 and 10 inclusive."
+    if (riskSeverity < 1 || riskSeverity > 10) {
+        return "Risk Severity needs to be between 1 and 10 inclusive."
     }
 
     //////////////// Date Identified Validation: ////////////////
@@ -709,7 +709,7 @@ const validatePatientRiskFactors = (patientRiskFactor) => {
 
     //////////////// Is Treated Validation: ////////////////
 
-    if (typeof isTreated !== "number") {
+    if (typeof isTreated !== "number" || isNaN(riskSeverity)) {
         return "Is Treated is required!"
     }
 
