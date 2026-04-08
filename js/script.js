@@ -818,7 +818,7 @@ const validateAppointments = (appointment) => {
 
       const AppointmentDate = new Date(appointment.AppointmentDate);
       const appointmentNotes = typeof appointment.AppointmentNotes === "string" ? appointment.AppointmentNotes.trim() : "";
-      const appointmentStatus = appointment.AppointmentStatus;
+      const StatusID = appointment.StatusID;
 
       if (AppointmentDate <= new Date()) {
         return "Appointment date must be in the future";
@@ -828,7 +828,7 @@ const validateAppointments = (appointment) => {
         return "Appointment Notes must be 500 characters or fewer.";
       }
 
-      if (!appointmentStatus) {
+      if (!StatusID) {
         return "Appointment Status is required.";
       }
 

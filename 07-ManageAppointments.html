@@ -42,8 +42,8 @@
                 <label for="AppointmentNotes">Appointment Notes</label>
                 <input type="text" id="AppointmentNotes" required>
                 <!-- Appointment Status input - drop down -->
-                <label for="AppointmentStatus">Appointment Status</label>
-                <select id="AppointmentStatus" required></select>
+                <label for="StatusID">StatusID</label>
+                <select id="StatusID" required></select>
 
                 <ul id="btnList">
                   <li><button type="submit" id="btnSubmit">Save Record</button></li>
@@ -74,7 +74,7 @@
   const divElement = document.getElementById("tblOutput");
   const messageDiv = document.getElementById("actionResult");
   const formName = document.getElementById("appointmentForm");
-  const fields = ["AppointmentID","StaffID","PatientID","AppointmentDate","AppointmentNotes", "AppointmentStatus"];
+  const fields = ["AppointmentID","StaffID","PatientID","AppointmentDate","AppointmentNotes", "StatusID"];
   const tableName = "tblAppointment";
   const primaryKeyPrefix = "A";
 
@@ -86,7 +86,7 @@
     // Fills the dropdown with the specified htmlSelectElement and with the field and table name
     createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff", ["StaffForename", "StaffSurname"]);
     createDropdownOptions(document.getElementById("PatientID"), "PatientID", "tblPatient", ["PatientForename", "PatientSurname"]);
-    createDropdownOptions(document.getElementById("AppointmentStatus"), "StatusID", "tblAppointment_Status");
+    createDropdownOptions(document.getElementById("StatusID"), "StatusID", "tblAppointment_Status");
     // Fills the AppointmentID input with the next AppointmentID available
     presentLatestID(document.getElementById("AppointmentID"), tableName, "AppointmentID", primaryKeyPrefix);
 
