@@ -680,7 +680,7 @@ const validateRiskFactors = (riskFactor) => {
     return null;
 }
 
-const validatePatientRiskFactors = (patientRiskFactor) => {
+const validatePatientRiskFactors = async (patientRiskFactor) => {
     if (!patientRiskFactor || typeof patientRiskFactor !== "object") {
       return "Patient Risk Factor details are required.";
     }
@@ -703,18 +703,38 @@ const validatePatientRiskFactors = (patientRiskFactor) => {
 
     // NOTE: Automatically validates date through input type 'date'
 
-    if (dateIdentified >= new Date()) {
-    return "Date Identified must be before todays date!";
+    // This MUST be set to midnight to effectively ignore the time part of Date
+    if (dateIdentified.setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0)) {
+        return "Date Identified must be before todays date!";
     }
 
     //////////////// Is Treated Validation: ////////////////
 
-    if (typeof isTreated !== "number" || isNaN(riskSeverity)) {
+    if (typeof isTreated !== "number" || isNaN(isTreated)) {
         return "Is Treated is required!"
     }
 
     if (isTreated !== 0 && isTreated !== 1) {
         return "Is Treated needs to be either 0 or 1."
+    }
+
+    //////////////// UNIQUE Risk Validation: ////////////////
+
+    // Ensure patient hasn't already been assigned the specific risk factor on the same date
+    const query = `
+        SELECT PatientRiskID
+        FROM tblPatient_RiskFactors 
+        WHERE PatientID = '${patientRiskFactor.PatientID}'
+            AND RiskID = '${patientRiskFactor.RiskID}'
+            AND DateIdentified = '${patientRiskFactor.DateIdentified}'
+    `;
+
+    const result = await runQuery(query);
+
+    //console.log(result);
+
+    if (result.affected_rows > 0) {
+        return "Patient has already been assigned this risk for the date identified!";
     }
 
     // If all checks have passed, return null
