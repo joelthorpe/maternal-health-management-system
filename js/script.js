@@ -836,11 +836,11 @@ const validateAppointments = (appointment) => {
 
       // Actual variables the user will enter and we need to validate
 
-      const AppointmentDate = new Date(appointment.AppointmentDate);
+      const AppointmentDateTime = new Date(appointment.AppointmentDateTime);
       const appointmentNotes = typeof appointment.AppointmentNotes === "string" ? appointment.AppointmentNotes.trim() : "";
       const StatusID = appointment.StatusID;
 
-      if (AppointmentDate <= new Date()) {
+      if (AppointmentDateTime <= new Date()) {
         return "Appointment date must be in the future";
       }
 
