@@ -36,8 +36,8 @@
                 <label for="PatientID">Patient ID</label>
                 <select id="PatientID" required></select>
                 <!-- Appointment Date input-->
-                <label for="AppointmentDate">Appointment Date</label>
-                <input type="date" id="AppointmentDate" required>
+                <label for="AppointmentDateTime">Appointment Date & Time</label>
+                <input type="datetime-local" id="AppointmentDateTime" required> <!-- https://www.w3schools.com/tags/att_input_type_datetime-local.asp -->
                 <!-- Appointment Notes input-->
                 <label for="AppointmentNotes">Appointment Notes</label>
                 <input type="text" id="AppointmentNotes" required>
@@ -74,7 +74,7 @@
   const divElement = document.getElementById("tblOutput");
   const messageDiv = document.getElementById("actionResult");
   const formName = document.getElementById("appointmentForm");
-  const fields = ["AppointmentID","StaffID","PatientID","AppointmentDate","AppointmentNotes", "StatusID"];
+  const fields = ["AppointmentID","StaffID","PatientID","AppointmentDateTime","AppointmentNotes", "StatusID"];
   const tableName = "tblAppointment";
   const primaryKeyPrefix = "A";
 
