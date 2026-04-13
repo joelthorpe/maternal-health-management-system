@@ -660,8 +660,6 @@ const validateRiskFactors = (riskFactor) => {
         return "Risk Name is required!";
     }
 
-    // 1000 has been used as a placeholder...
-
     if (riskName.length > 100) {
         return "Risk Name needs to be 100 characters or less."
     }
