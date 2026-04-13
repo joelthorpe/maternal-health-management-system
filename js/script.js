@@ -542,31 +542,39 @@ const validateClinic = async (clinic) => {
 
   const sql = `SELECT COUNT(*) AS currentCapacity FROM tblPatient WHERE ClinicID ="${clinic.ClinicID}";`;
   const result = await runQuery(sql);
+  
 
   const clinicID = clinic.ClinicID;
   const regionID = clinic.RegionID;
   const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
   const clinicCapacity = Number(clinic.ClinicCapacity);
 
-  if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
-    return "The Clinic capacity must be greater than 0";
-  }
-
-  if (clinicCapacity > 150) {
-    return "Maximum clinic capacity is 150";
-  }
-
-  if(clinicCapacity < result.data[0].currentCapacity)
+  if(result && result.success)
   {
-      return "Cannot lower capacity to below total pre-existing patients which are in the clinic"
-  }
+      if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
+      return "The Clinic capacity must be greater than 0";
+      }
 
-  if (!clinicName) {
-    return "Clinic name is required.";
-  }
+      if (clinicCapacity > 150) {
+      return "Maximum clinic capacity is 150";
+      }
 
-  if (clinicName.length > 150) {
-    return "Clinic name must be 150 characters or fewer.";
+      if(clinicCapacity < result.data[0].currentCapacity)
+      {
+          return "Cannot lower capacity to below total pre-existing patients which are in the clinic"
+      }
+
+      if (!clinicName) {
+      return "Clinic name is required.";
+      }
+
+      if (clinicName.length > 150) {
+      return "Clinic name must be 150 characters or fewer.";
+      }
+  }
+  else
+  {
+      return "Error: could not validate (database)";
   }
 
   return null;
