@@ -255,10 +255,11 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 - field: The field that you want the options of e.g. ClinicID would show all the ClinicIDs currently available
 - displayFields: Any additional fields to be displayed alongside the field, mainly used for Staff and Patient Forename + Surname
 - tableName: The table which the field resides in
+- distinct: Useful for if the field being used for the dropdown is NOT a primary key, defaulted to false
 
 - Example Format: createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff", ["StaffForename", "StaffSurname"]);
 */
-const createDropdownOptions = async (htmlSelectElement, field, tableName, displayFields = null)=>{
+const createDropdownOptions = async (htmlSelectElement, field, tableName, displayFields = null, distinct = false)=>{
     // Gets the relating name field for the table if it ends in ID
     if (!displayFields && field.endsWith("ID")) {
         // Ensures the fields are stored within an Array
@@ -271,8 +272,18 @@ const createDropdownOptions = async (htmlSelectElement, field, tableName, displa
     // Joins the additional fields if more than 1 with the primary field
     const selectFields = [field, ...displayFields].join(", ");
 
-    let sql = `SELECT ${selectFields} FROM ${tableName} ORDER BY ${field} ASC`
+    let sql = ``;
+
+    // If the distinct flag is used, run this query
+    if (distinct) {
+        sql = `SELECT DISTINCT ${selectFields} FROM ${tableName} ORDER BY ${field} ASC`
+    } else {
+        // Otherwise, default back to the below query
+        sql = `SELECT ${selectFields} FROM ${tableName} ORDER BY ${field} ASC`
+    }
+
     const result = await runQuery(sql);
+    console.log(result);
 
     if (!result || !result.data || result.data.length <= 0) {
         // If the data returned from the query being ran is invalid, stop
