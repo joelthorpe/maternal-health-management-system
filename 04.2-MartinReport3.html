@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Staff and Patient Density Reports</title>
+  <link rel="stylesheet" href="css\style.css">
+  <style>
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
+    <a href="04-ReportsDashboard.html">Reports Dashboard</a>
+    <span class="nav-separator"></span>
+    <a href="04.1-JoelReports.html">Joel Reports</a>
+    <a href="04.2-MartinReports.html">Martin Reports</a>
+    <a href="04.3-AdamReports.html">Adam Reports</a>
+    <a href="04.4-CameronReports.html">Cameron Reports</a>
+    <a href="04.5-JonnyReports.html">Jonny Reports</a>
+  </div>
+
+  <div class="dashboard-bg">
+    <div class="main layout">
+        <div class="form">
+            <h2>View Patients With Multiple Risks</h2>
+            <form id="multiRiskPatientForm">
+                <label for="ClinicID">Clinic ID</label>
+                <select id="ClinicID" required></select>
+                
+                <button type="submit" id="btnSubmit">See Record</button>
+            </form>
+        </div>
+
+        <div class="form">
+          <h2>Patients With Multiple Risks</h2>
+          <div class="table-wrapper">
+            <div class="displayTable"></div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Gets the element where the element will be displayed
+    const chartOutput = document.querySelector(".displayTable");
+    // The form used to select which clinic to display
+    const form = document.querySelector("#multiRiskPatientForm");
+  // A portion of code that is ran when the web is loaded
+    document.addEventListener("DOMContentLoaded", async () => {
+      createDropdownOptions(document.getElementById("ClinicID"), "ClinicID", "tblClinic");
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      chartOutput.innerHTML = "";
+
+      
+      let ClinicName = "";
+      let PatientLabels = [];
+      let NumberOfRisks = [];
+
+      const ClinicID = document.querySelector("#ClinicID");
+      let HTMLtable = document.createElement("table");
+      let tblHeaders = document.createElement("tr");
+      const fields = ["Patient Full Name","Number Of Risks","Average Risk"];
+
+      const sql = `SELECT
+                    CONCAT(p.PatientForename , " ",p.PatientSurname) AS PatientFullName,
+                    COUNT(pr.RiskID) AS NumberOfRisks,
+                    ROUND(AVG(pr.RiskSeverity),2) AS AverageRisk
+                    FROM
+                    tblPatient p
+                    JOIN tblClinic c ON p.ClinicID = c.ClinicID
+                    JOIN tblPatient_RiskFactors pr ON p.PatientID = pr.PatientID
+                    WHERE isTreated = 0 AND c.ClinicID = "${ClinicID.value}"
+                    GROUP BY
+                    c.ClinicName,
+                    PatientFullName
+                    HAVING NumberOfRisks >= 2
+                    ORDER BY AverageRisk DESC;` ;
+
+      const result = await runQuery(sql);
+      console.log(result.data);
+
+      if(result && result.success)
+      {
+        if(result.data.length >= 1){
+          chartOutput.appendChild(HTMLtable);
+          HTMLtable.appendChild(tblHeaders);
+
+          for(let field of fields){
+              let heading = document.createElement("th");
+              heading.textContent = field;
+              tblHeaders.appendChild(heading);
+          }
+
+          // first for loop is used to create rows
+        for(let data of result.data)
+        {
+            let newRow = document.createElement("tr");
+
+            for(let key in data){
+                let newCol = document.createElement("td");
+                newCol.textContent = data[key];
+                newRow.appendChild(newCol);
+            }
+
+            HTMLtable.appendChild(newRow);
+        }
+        }
+        else{
+          chartOutput.textContent = "No Patients With More Than Two Uncured Risks Present";
+        }
+        
+      }
+      else
+      {
+        chartOutput.textContent = "No Data Retrieved";
+      }
+      
+    });
+  </script>
+</body>
+</html>
