@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Clinic Reports</title>
+  <link rel="stylesheet" href="css\style.css">
+  <style>
+    canvas{
+      size: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
+    <a href="04-ReportsDashboard.html">Reports Dashboard</a>
+    <span class="nav-separator"></span>
+    <a href="04.1-JoelReports.html">Joel Reports</a>
+    <a href="04.2-MartinReports.html">Martin Reports</a>
+    <a href="04.3-AdamReports.html">Adam Reports</a>
+    <a href="04.4-CameronReports.html">Cameron Reports</a>
+    <a href="04.5-JonnyReports.html">Jonny Reports</a>
+  </div>
+
+  <div class="dashboard-bg">
+    <div class="main layout">
+        <div class="form">
+            <h2>View Staff and Patient Density</h2>
+            <form id="riskDistributionForm">
+                <label for="ClinicID">Clinic ID</label>
+                <select id="ClinicID" required></select>
+                
+                <button type="submit" id="btnSubmit">See Record</button>
+            </form>
+        </div>
+
+        <div class="form">
+          <h2>Staff and Patient Density</h2>
+            <div class="displayCharts"></div>
+        </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Gets the element where the element will be displayed
+    const chartOutput = document.querySelector(".displayCharts");
+    // The form used to select which clinic to display
+    const form = document.querySelector("#riskDistributionForm");
+    // Colours can be configured, this is a placeholder for now maybe
+    const colours = ['red','blue','green','purple','yellow'];
+  // A portion of code that is ran when the web is loaded
+    document.addEventListener("DOMContentLoaded", async () => {
+      createDropdownOptions(document.getElementById("ClinicID"), "ClinicID", "tblClinic");
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      chartOutput.innerHTML = "";
+
+      let NumberOfPatients = 0;
+      let NumberOfStaff = 0;
+      let ClinicName = "";
+      let PercentageOfClinicCapacityUsed = "";
+      const ClinicID = document.querySelector("#ClinicID");
+      const sql = `SELECT
+                  c.ClinicName,
+                  COUNT(DISTINCT p.PatientID) AS NumberOfPatients,
+                  COUNT(DISTINCT s.StaffID) AS NumberOfStaff,
+                  CONCAT(ROUND((COUNT(DISTINCT p.PatientID) / c.ClinicCapacity) * 100 , 0), '%') AS PercentageOfClinicCapacityUsed
+                  FROM 
+                  tblClinic c
+                  JOIN tblPatient AS p ON p.ClinicID = c.ClinicID
+                  JOIN tblStaff AS s ON s.ClinicID = c.ClinicID
+                  WHERE c.ClinicID = "${ClinicID.value}"
+                  GROUP BY c.ClinicName
+                  ORDER BY ROUND((COUNT(p.PatientID) / c.ClinicCapacity) * 100 , 0) DESC;` ;
+      const result = await runQuery(sql);
+      console.log(result.data[0].ClinicName);
+
+      if(result && result.success && result.data.length > 0)
+      {
+        ClinicName = result.data[0].ClinicName;
+        NumberOfPatients = Number(result.data[0].NumberOfPatients);
+        NumberOfStaff = Number(result.data[0].NumberOfStaff);
+        PercentageOfClinicCapacityUsed = result.data[0].PercentageOfClinicCapacityUsed;
+
+        let newChart = document.createElement("canvas");
+
+        chartOutput.appendChild(newChart);
+
+        // Creating the chart
+        new Chart(newChart, {
+          type: "bar",
+          data: {
+            labels: ["Patients", "Staff"],
+            datasets: [{
+              backgroundColor: colours,
+              data: [NumberOfPatients, NumberOfStaff],
+              borderColor: "black",
+              borderWidth: 3
+            }]
+          },
+          options: {
+            plugins: {
+              legend: {display:false,},
+              title: {
+                display: true,
+                text: `${ClinicName} (${PercentageOfClinicCapacityUsed} Full)`,
+                font: {size:16},
+                color:"white"
+              }
+            },
+            scales: {
+                y: {
+                    ticks: { color: "white"},
+                    grid: {color: "white"}
+                },
+                x: {
+                    ticks: { color: "white"},
+                    grid: {color: "white"}
+                },
+              },
+          }
+        });
+
+        
+      }
+      else
+      {
+        chartOutput.textContent = "No Data Retrieved";
+      }
+      
+    });
+  </script>
+</body>
+</html>
