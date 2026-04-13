@@ -740,7 +740,7 @@ const validatePatientRiskFactors = async (patientRiskFactor) => {
 }
 
 /////////////////////////// Validation For Patients ///////////////////////////////
-const validatePatients = (patient) => {
+const validatePatients = async (patient) => {
       if (!patient || typeof patient !== "object") {
         return "Patient details are required.";
       }
@@ -814,6 +814,30 @@ const validatePatients = (patient) => {
       const phoneRegex = /^\+?[1-9]\d{1,14}$/;
       if (!phoneRegex.test(patientPhoneNo)) {
         return "Patient Phone Number must be a valid international phone number.";
+      }
+
+      // Clinic capacity check
+      const clinicID = patient.ClinicID;
+      if (!clinicID) {
+        return "Clinic ID is required.";
+      }
+
+      const countSql = `SELECT COUNT(*) as patientCount FROM tblPatient WHERE ClinicID = '${clinicID}'`;
+      const countResult = await runQuery(countSql);
+      if (!countResult || !countResult.success) {
+        return "Error checking clinic patient count.";
+      }
+      const patientCount = Number(countResult.data[0].patientCount);
+
+      const capacitySql = `SELECT ClinicCapacity FROM tblClinic WHERE ClinicID = '${clinicID}'`;
+      const capacityResult = await runQuery(capacitySql);
+      if (!capacityResult || !capacityResult.success || capacityResult.data.length === 0) {
+        return "Clinic not found or error retrieving capacity.";
+      }
+      const clinicCapacity = Number(capacityResult.data[0].ClinicCapacity);
+
+      if (patientCount >= clinicCapacity) {
+        return `Clinic ${clinicID} is at maximum capacity (${clinicCapacity} patients). Cannot add patient.`;
       }
 
       return null;
