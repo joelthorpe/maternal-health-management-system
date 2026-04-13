@@ -746,19 +746,14 @@ const validatePatientRiskFactors = async (patientRiskFactor) => {
     //////////////// UNIQUE Risk Validation: ////////////////
 
     // Ensure patient hasn't already been assigned the specific risk factor on the same date
-    const query = `
-        SELECT PatientRiskID
-        FROM tblPatient_RiskFactors 
-        WHERE PatientID = '${patientRiskFactor.PatientID}'
-            AND RiskID = '${patientRiskFactor.RiskID}'
-            AND DateIdentified = '${patientRiskFactor.DateIdentified}'
-    `;
+    const query = `SELECT PatientRiskID FROM tblPatient_RiskFactors WHERE PatientID = '${patientRiskFactor.PatientID}' AND RiskID = '${patientRiskFactor.RiskID}' AND DateIdentified = '${patientRiskFactor.DateIdentified}'`;
 
-    const result = await runQuery(query);
+    const riskValidation = await runQuery(query);
 
-    //console.log(result);
+    //console.log(riskValidation);
 
-    if (result.affected_rows > 0) {
+    // If the riskValidation query failed, or if the query returned a list of more than 0 - treat it as an error
+    if (!riskValidation || !riskValidation.success || riskValidation.data.length > 0) {
         return "Patient has already been assigned this risk for the date identified!";
     }
 
