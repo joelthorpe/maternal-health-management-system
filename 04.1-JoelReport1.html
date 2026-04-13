@@ -54,13 +54,10 @@
       event.preventDefault();
 
       const village = document.querySelector("#village").value;
-      //console.log(village);
-
+  
       // Runs the query for the report
       const sql = `SELECT p.PatientVillage, c.ClinicName, SUM(p.PatientNoOfPregnancies) AS TotalPregnancies, SUM(p.PatientPreviousBirths) AS TotalBirths, SUM(p.PatientNoOfPregnancies - p.PatientPreviousBirths) AS TotalLoss FROM tblPatient p INNER JOIN tblClinic c ON p.ClinicID = c.ClinicID WHERE PatientVillage = "${village}" GROUP BY PatientVillage ORDER BY TotalLoss;`;
       const result = await runQuery(sql);
-
-      //console.log(result);
 
       // If the query was ran successfully
       if (result && result.success) {

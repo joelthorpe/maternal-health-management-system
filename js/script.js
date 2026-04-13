@@ -255,7 +255,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 - field: The field that you want the options of e.g. ClinicID would show all the ClinicIDs currently available
 - displayFields: Any additional fields to be displayed alongside the field, mainly used for Staff and Patient Forename + Surname
 - tableName: The table which the field resides in
-- distinct: Useful for if the field being used for the dropdown is NOT a primary key, defaulted to false
+- distinct: Useful if the field being used for the dropdown is NOT a primary key, defaulted to false
 
 - Example Format: createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff", ["StaffForename", "StaffSurname"]);
 */
