@@ -535,34 +535,42 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = n
 
 //////////////////////////////////// VALIDATION CODE ////////////////////////////////////
 
-const validateClinic = (clinic) => {
-    if (!clinic || typeof clinic !== "object") {
-      return "Clinic details are required.";
-    }
-
-    const clinicID = clinic.ClinicID;
-    const regionID = clinic.RegionID;
-    const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
-    const clinicCapacity = Number(clinic.ClinicCapacity);
-
-    if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
-      return "The Clinic capacity must be greater than 0";
-    }
-
-    if (clinicCapacity > 150) {
-      return "Maximum clinic capacity is 150";
-    }
-
-    if (!clinicName) {
-      return "Clinic name is required.";
-    }
-
-    if (clinicName.length > 150) {
-      return "Clinic name must be 150 characters or fewer.";
-    }
-
-    return null;
+const validateClinic = async (clinic) => {
+  if (!clinic || typeof clinic !== "object") {
+    return "Clinic details are required.";
   }
+
+  const sql = `SELECT COUNT(*) AS currentCapacity FROM tblPatient WHERE ClinicID ="${clinic.ClinicID}";`;
+  const result = await runQuery(sql);
+
+  const clinicID = clinic.ClinicID;
+  const regionID = clinic.RegionID;
+  const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
+  const clinicCapacity = Number(clinic.ClinicCapacity);
+
+  if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
+    return "The Clinic capacity must be greater than 0";
+  }
+
+  if (clinicCapacity > 150) {
+    return "Maximum clinic capacity is 150";
+  }
+
+  if(clinicCapacity < result.data[0].currentCapacity)
+  {
+      return "Cannot lower capacity to below total pre-existing patients which are in the clinic"
+  }
+
+  if (!clinicName) {
+    return "Clinic name is required.";
+  }
+
+  if (clinicName.length > 150) {
+    return "Clinic name must be 150 characters or fewer.";
+  }
+
+  return null;
+}
 
 
   const validateStaff = async (staff) => {
