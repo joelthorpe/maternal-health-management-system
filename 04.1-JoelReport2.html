@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Clinic Reports</title>
+  <title>Risk Severity Reports</title>
   <link rel="stylesheet" href="css\style.css">
 
 </head>
@@ -22,8 +22,112 @@
   </div>
 
   <div class="dashboard-bg">
-  </div>
+    <div id="actionResult"></div>
+    <div class="main layout">
+        <div class="form">
+            <h2>View High-Risk Patients Lacking Active Appointments</h2>
+            <form id="severityForm">
+                <label for="riskSeverity">Risk Severity</label>
+                <select id="riskSeverity" required></select>
+                <button type="submit" id="btnSubmit">See Reports</button>
+            </form>
+            </form>
+        </div>
 
+        <div class="form">
+          <h2>High-Risk Patients Lacking Active Appointments for defined Risk Severity</h2>
+            <div class="table-wrapper">
+              <div class="displayResults"></div>
+            </div>
+        </div>
+    </div>
+  </div>
+  </div>
   <script src="js/script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Populates the dropdown options manually, since they are limited to the options 1-10
+      const dropdownOptions = document.getElementById("riskSeverity");
+      // Default value
+      const defaultOption = document.createElement("option");
+      defaultOption.value = '';
+      defaultOption.textContent = 'Select a RiskSeverity';
+      dropdownOptions.appendChild(defaultOption);
+
+      for (let i = 1; i <= 10; i++) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = i;
+        dropdownOptions.appendChild(option);
+      }
+    });
+
+    const form = document.querySelector("#severityForm");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const riskSeverityValue = document.querySelector("#riskSeverity").value;
+  
+      // Runs the query for the report
+      const sql = `SELECT p.PatientID, p.PatientForename, p.PatientSurname, COUNT(DISTINCT a.AppointmentID) AS TotalAppointments FROM tblPatient p INNER JOIN tblPatient_RiskFactors pr on p.PatientID = pr.PatientID LEFT JOIN tblAppointment a ON p.PatientID = a.PatientID WHERE pr.IsTreated = 0 AND pr.RiskSeverity >= '${riskSeverityValue}' GROUP BY p.PatientID, p.PatientForename, p.PatientSurname HAVING COUNT(DISTINCT a.AppointmentID) = 0;`;
+      const result = await runQuery(sql);
+
+      // If the query was ran successfully
+      if (result && result.success) {
+        const resultsDiv = document.querySelector('.displayResults');
+        resultsDiv.innerHTML = '';
+
+        const resultData = result.data;
+
+        if(resultData.length === 0) {
+          // This part should happen, but is added as a fallback
+          resultsDiv.innerHTML = 'No data found for this report.'
+        } else {
+          const table = document.createElement('table');
+
+          ///////////// HEADERS /////////////
+
+          let headerRow = document.createElement('tr');
+
+          // Loop through the attribute values of the first data object
+          for (let key in resultData[0]) {
+            // Create a table header element
+            let tableHead = document.createElement('th');
+            // Add the key value to the header element
+            tableHead.textContent = key;
+            // Append it to the header row
+            headerRow.appendChild(tableHead);
+          }
+
+          // Add the header row to the table
+          table.appendChild(headerRow);
+
+          ///////////// TABLE ROWS /////////////
+
+          // Loops through the data results
+          for(let data of result.data)
+          {
+            // Initialises a table row for each of the data rows
+            let tableRow = document.createElement('tr');
+
+              // Loops through the entities to get the attributes
+              for(let key in data){
+                  let tableCol = document.createElement('td');
+                  // Used to get the other pair value
+                  tableCol.textContent = data[key];
+                  // Appends each column to the current row
+                  tableRow.appendChild(tableCol);
+              }
+
+              // Adds the whole row to the table
+              table.appendChild(tableRow);
+          }
+
+          // Adds the table to the results section on the website
+          resultsDiv.appendChild(table);
+        }
+      }
+    });
+  </script>
 </body>
 </html>
