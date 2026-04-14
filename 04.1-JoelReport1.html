@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Village Reports</title>
+  <title>Village Report</title>
   <link rel="stylesheet" href="css\style.css">
 
 </head>
@@ -59,7 +59,7 @@
       const sql = `SELECT p.PatientVillage, c.ClinicName, SUM(p.PatientNoOfPregnancies) AS TotalPregnancies, SUM(p.PatientPreviousBirths) AS TotalBirths, SUM(p.PatientNoOfPregnancies - p.PatientPreviousBirths) AS TotalLoss FROM tblPatient p INNER JOIN tblClinic c ON p.ClinicID = c.ClinicID WHERE PatientVillage = '${village}' GROUP BY PatientVillage ORDER BY TotalLoss;`;
       const result = await runQuery(sql);
 
-      // If the query was ran successfully
+      // If the query ran successfully
       if (result && result.success) {
         const resultsDiv = document.querySelector('.displayResults');
         resultsDiv.innerHTML = '';

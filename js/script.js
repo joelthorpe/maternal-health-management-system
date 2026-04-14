@@ -124,7 +124,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                         fields[0] - The name of the ID such as "ClinicID"
                         data[fields[0]] - The value of the ID such as C001
                         */
-                       console.log(`SELECT ${fields[0]} FROM ${checkTable} WHERE ${fields[0]} = "${data[fields[0]]}";`);
+                        //console.log(`SELECT ${fields[0]} FROM ${checkTable} WHERE ${fields[0]} = "${data[fields[0]]}";`);
                         let checkSql = `SELECT ${fields[0]} FROM ${checkTable} WHERE ${fields[0]} = "${data[fields[0]]}";`;
                         let checkResult = await runQuery(checkSql);
                         // checks if data was returned with the specfic type of ID and value and also checks if there is actually data returned from that table
@@ -283,7 +283,7 @@ const createDropdownOptions = async (htmlSelectElement, field, tableName, displa
     }
 
     const result = await runQuery(sql);
-    console.log(result);
+    //console.log(result);
 
     if (!result || !result.data || result.data.length <= 0) {
         // If the data returned from the query being ran is invalid, stop
