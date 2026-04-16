@@ -80,10 +80,12 @@
                   GROUP BY c.ClinicName
                   ORDER BY ROUND((COUNT(p.PatientID) / c.ClinicCapacity) * 100 , 0) DESC;` ;
       const result = await runQuery(sql);
-      console.log(result.data[0].ClinicName);
+
+
 
       if(result && result.success && result.data.length > 0)
       {
+        console.log(result.data[0].ClinicName);
         ClinicName = result.data[0].ClinicName;
         NumberOfPatients = Number(result.data[0].NumberOfPatients);
         NumberOfStaff = Number(result.data[0].NumberOfStaff);
@@ -132,7 +134,7 @@
       }
       else
       {
-        chartOutput.textContent = "No Data Retrieved";
+        chartOutput.textContent = "Insufficient patients/staff to display data";
       }
       
     });

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Staff and Patient Density Reports</title>
+  <title>Patients With Multiple Risks Reports</title>
   <link rel="stylesheet" href="css\style.css">
   <style>
   </style>
@@ -51,9 +51,19 @@
     // The form used to select which clinic to display
     const form = document.querySelector("#multiRiskPatientForm");
   // A portion of code that is ran when the web is loaded
+
+  const createSelectAllOption = () =>{
+      let selectClinicID = document.getElementById("ClinicID");
+      let selectAllOption = document.createElement("option");
+      selectAllOption.textContent = "Select All Clinics";
+      selectAllOption.value = "";
+      selectClinicID.appendChild(selectAllOption);
+  }
     document.addEventListener("DOMContentLoaded", async () => {
-      createDropdownOptions(document.getElementById("ClinicID"), "ClinicID", "tblClinic");
+      await createDropdownOptions(document.getElementById("ClinicID"), "ClinicID", "tblClinic");
+      createSelectAllOption();
     });
+
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -67,23 +77,48 @@
       const ClinicID = document.querySelector("#ClinicID");
       let HTMLtable = document.createElement("table");
       let tblHeaders = document.createElement("tr");
-      const fields = ["Patient Full Name","Number Of Risks","Average Risk"];
 
-      const sql = `SELECT
-                    CONCAT(p.PatientForename , " ",p.PatientSurname) AS PatientFullName,
-                    COUNT(pr.RiskID) AS NumberOfRisks,
-                    ROUND(AVG(pr.RiskSeverity),2) AS AverageRisk
-                    FROM
-                    tblPatient p
-                    JOIN tblClinic c ON p.ClinicID = c.ClinicID
-                    JOIN tblPatient_RiskFactors pr ON p.PatientID = pr.PatientID
-                    WHERE isTreated = 0 AND c.ClinicID = "${ClinicID.value}"
-                    GROUP BY
-                    c.ClinicName,
-                    PatientFullName
-                    HAVING NumberOfRisks >= 2
-                    ORDER BY AverageRisk DESC;` ;
-
+      
+      let sql= "";
+      let fields = "";
+      if(ClinicID.value == ""){
+        fields = ["Clinic Name","Patient Full Name","Number Of Risks","Average Risk"];
+        sql = `SELECT
+              c.ClinicName,
+              CONCAT(p.PatientForename ," " ,p.PatientSurname) AS PatientFullName,
+              COUNT(pr.RiskID) AS NumberOfRisks,
+              ROUND(AVG(pr.RiskSeverity),2) AS AverageRisk
+              FROM
+              tblPatient p
+              JOIN tblClinic c ON p.ClinicID = c.ClinicID
+              JOIN tblPatient_RiskFactors pr ON p.PatientID = pr.PatientID
+              WHERE isTreated = 0 
+              GROUP BY
+              c.ClinicName,
+              PatientFullName
+              HAVING NumberOfRisks >= 2
+              ORDER BY AverageRisk DESC;`
+      }
+      else
+      {
+        fields = ["Patient Full Name","Number Of Risks","Average Risk"];
+        sql = `SELECT
+              CONCAT(p.PatientForename , " ",p.PatientSurname) AS PatientFullName,
+              COUNT(pr.RiskID) AS NumberOfRisks,
+              ROUND(AVG(pr.RiskSeverity),2) AS AverageRisk
+              FROM
+              tblPatient p
+              JOIN tblClinic c ON p.ClinicID = c.ClinicID
+              JOIN tblPatient_RiskFactors pr ON p.PatientID = pr.PatientID
+              WHERE isTreated = 0 AND c.ClinicID = "${ClinicID.value}"
+              GROUP BY
+              c.ClinicName,
+              PatientFullName
+              HAVING NumberOfRisks >= 2
+              ORDER BY AverageRisk DESC;` ;
+      }
+      
+      console.log(sql);
       const result = await runQuery(sql);
       console.log(result.data);
 
@@ -99,7 +134,6 @@
               tblHeaders.appendChild(heading);
           }
 
-          // first for loop is used to create rows
         for(let data of result.data)
         {
             let newRow = document.createElement("tr");
