@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Treatment Success Rate Report</title>
+  <link rel="stylesheet" href="css\style.css">
+
+</head>
+<body>
+  <div class="navbar">
+    <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
+    <a href="04-ReportsDashboard.html">Reports Dashboard</a>
+    <span class="nav-separator"></span>
+    <a href="04.1-JoelReports.html">Joel Reports</a>
+    <a href="04.2-MartinReports.html">Martin Reports</a>
+    <a href="04.3-AdamReports.html">Adam Reports</a>
+    <a href="04.4-CameronReports.html">Cameron Reports</a>
+    <a href="04.5-JonnyReports.html">Jonny Reports</a>
+  </div>
+
+  <div class="dashboard-bg">
+    <div id="actionResult"></div>
+    <div class="main layout">
+        <div class="form">
+            <h2>View Clinic Risk Treatment Success Rates</h2>
+            <form id="clinicForm">
+                <label for="clinicName">Clinic Name</label>
+                <select id="clinicName" required></select>
+                <button type="submit" id="btnSubmit">See Reports</button>
+            </form>
+            </form>
+        </div>
+
+        <div class="form">
+          <h2>Clinic Risk Treatment Success Rates for specified Clinic Name</h2>
+          <canvas id="displayResults"></canvas>
+        </div>
+    </div>
+  </div>
+  </div>
+  <script src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      createDropdownOptions(document.getElementById("clinicName"), "ClinicName", "tblClinic");
+    });
+  
+    // Used to clear the chart, prevents an 'in use' error occurring
+    let resultChart;
+
+    const form = document.querySelector("#clinicForm");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const clinicNameValue = document.querySelector("#clinicName").value;
+
+      // Runs initial view query
+      const viewSQL = `CREATE OR REPLACE VIEW view_ClinicRiskTreatments AS SELECT c.ClinicID, c.ClinicName, COUNT(pr.PatientRiskID) AS TotalRisksIdentified, SUM(pr.IsTreated) AS TotalRisksTreated FROM tblClinic c INNER JOIN tblPatient p ON c.ClinicID = p.ClinicID INNER JOIN tblPatient_RiskFactors pr on p.PatientID = pr.PatientID GROUP BY c.ClinicID, c.ClinicName;`;
+      const viewResult = await runQuery(viewSQL); // Don't really need to assign it to anything, just for debugging
+      //console.log(viewResult);
+      
+      // Runs the query for the report
+      const sql = `SELECT ClinicName, TotalRisksIdentified, TotalRisksTreated, (TotalRisksTreated / TotalRisksIdentified) * 100 AS SuccessPercentage FROM view_ClinicRiskTreatments WHERE TotalRisksIdentified > 0 AND ClinicName = '${clinicNameValue}' ORDER BY SuccessPercentage DESC;`;
+      const result = await runQuery(sql);
+      //console.log(result);
+
+      // If the query ran successfully
+      if (result && result.success) {
+        // Initialise arrays for storing chart data
+        let clinicNames = [];
+        let successfulTreatments = [];
+        let unsuccessfulTreatments = [];
+
+        for (let data of result.data) {
+          clinicNames.push(data.ClinicName);
+          successfulTreatments.push(Number(data.TotalRisksTreated));
+          unsuccessfulTreatments.push(Number(data.TotalRisksIdentified) - Number(data.TotalRisksTreated));
+        }
+        //console.log(clinicNames);
+
+        // If a chart exists currently, delete it
+        if (resultChart) {
+          resultChart.destroy();
+        }
+        
+        // https://www.chartjs.org/docs/latest/samples/bar/vertical.html
+        // https://www.w3schools.com/ai/ai_chartjs.asp
+        resultChart = new Chart(document.getElementById("displayResults"), {
+          type: "bar",
+          data: {
+            labels: clinicNames,
+            datasets: [
+              {
+                label: "Successful Clinic Treatments",
+                backgroundColor: "green",
+                data: successfulTreatments,
+              },
+              {
+                label: "Unsuccessful Clinic Treatments",
+                backgroundColor: "red",
+                data: unsuccessfulTreatments,
+              }
+            ]
+          },
+          options: {
+            plugins: {
+              title: {
+                display: true,
+                text: "Clinic Risk Treatment Success Rates"
+              }
+            },
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

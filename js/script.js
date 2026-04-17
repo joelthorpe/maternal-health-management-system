@@ -124,7 +124,7 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                         fields[0] - The name of the ID such as "ClinicID"
                         data[fields[0]] - The value of the ID such as C001
                         */
-                       console.log(`SELECT ${fields[0]} FROM ${checkTable} WHERE ${fields[0]} = "${data[fields[0]]}";`);
+                        //console.log(`SELECT ${fields[0]} FROM ${checkTable} WHERE ${fields[0]} = "${data[fields[0]]}";`);
                         let checkSql = `SELECT ${fields[0]} FROM ${checkTable} WHERE ${fields[0]} = "${data[fields[0]]}";`;
                         let checkResult = await runQuery(checkSql);
                         // checks if data was returned with the specfic type of ID and value and also checks if there is actually data returned from that table
@@ -255,10 +255,11 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 - field: The field that you want the options of e.g. ClinicID would show all the ClinicIDs currently available
 - displayFields: Any additional fields to be displayed alongside the field, mainly used for Staff and Patient Forename + Surname
 - tableName: The table which the field resides in
+- distinct: Useful if the field being used for the dropdown is NOT a primary key, defaulted to false
 
 - Example Format: createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff", ["StaffForename", "StaffSurname"]);
 */
-const createDropdownOptions = async (htmlSelectElement, field, tableName, displayFields = null)=>{
+const createDropdownOptions = async (htmlSelectElement, field, tableName, displayFields = null, distinct = false)=>{
     // Gets the relating name field for the table if it ends in ID
     if (!displayFields && field.endsWith("ID")) {
         // Ensures the fields are stored within an Array
@@ -271,8 +272,18 @@ const createDropdownOptions = async (htmlSelectElement, field, tableName, displa
     // Joins the additional fields if more than 1 with the primary field
     const selectFields = [field, ...displayFields].join(", ");
 
-    let sql = `SELECT ${selectFields} FROM ${tableName} ORDER BY ${field} ASC`
+    let sql = ``;
+
+    // If the distinct flag is used, run this query
+    if (distinct) {
+        sql = `SELECT DISTINCT ${selectFields} FROM ${tableName} ORDER BY ${field} ASC`
+    } else {
+        // Otherwise, default back to the below query
+        sql = `SELECT ${selectFields} FROM ${tableName} ORDER BY ${field} ASC`
+    }
+
     const result = await runQuery(sql);
+    //console.log(result);
 
     if (!result || !result.data || result.data.length <= 0) {
         // If the data returned from the query being ran is invalid, stop
@@ -535,34 +546,50 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = n
 
 //////////////////////////////////// VALIDATION CODE ////////////////////////////////////
 
-const validateClinic = (clinic) => {
-    if (!clinic || typeof clinic !== "object") {
-      return "Clinic details are required.";
-    }
-
-    const clinicID = clinic.ClinicID;
-    const regionID = clinic.RegionID;
-    const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
-    const clinicCapacity = Number(clinic.ClinicCapacity);
-
-    if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
-      return "The Clinic capacity must be greater than 0";
-    }
-
-    if (clinicCapacity > 150) {
-      return "Maximum clinic capacity is 150";
-    }
-
-    if (!clinicName) {
-      return "Clinic name is required.";
-    }
-
-    if (clinicName.length > 150) {
-      return "Clinic name must be 150 characters or fewer.";
-    }
-
-    return null;
+const validateClinic = async (clinic) => {
+  if (!clinic || typeof clinic !== "object") {
+    return "Clinic details are required.";
   }
+
+  const sql = `SELECT COUNT(*) AS currentCapacity FROM tblPatient WHERE ClinicID ="${clinic.ClinicID}";`;
+  const result = await runQuery(sql);
+  
+
+  const clinicID = clinic.ClinicID;
+  const regionID = clinic.RegionID;
+  const clinicName = typeof clinic.ClinicName === "string" ? clinic.ClinicName.trim() : "";
+  const clinicCapacity = Number(clinic.ClinicCapacity);
+
+  if(result && result.success)
+  {
+      if (!Number.isInteger(clinicCapacity) || clinicCapacity < 1) {
+      return "The Clinic capacity must be greater than 0";
+      }
+
+      if (clinicCapacity > 150) {
+      return "Maximum clinic capacity is 150";
+      }
+
+      if(clinicCapacity < result.data[0].currentCapacity)
+      {
+          return "Cannot lower capacity to below total pre-existing patients which are in the clinic"
+      }
+
+      if (!clinicName) {
+      return "Clinic name is required.";
+      }
+
+      if (clinicName.length > 150) {
+      return "Clinic name must be 150 characters or fewer.";
+      }
+  }
+  else
+  {
+      return "Error: could not validate (database)";
+  }
+
+  return null;
+}
 
 
   const validateStaff = async (staff) => {
@@ -719,19 +746,14 @@ const validatePatientRiskFactors = async (patientRiskFactor) => {
     //////////////// UNIQUE Risk Validation: ////////////////
 
     // Ensure patient hasn't already been assigned the specific risk factor on the same date
-    const query = `
-        SELECT PatientRiskID
-        FROM tblPatient_RiskFactors 
-        WHERE PatientID = '${patientRiskFactor.PatientID}'
-            AND RiskID = '${patientRiskFactor.RiskID}'
-            AND DateIdentified = '${patientRiskFactor.DateIdentified}'
-    `;
+    const query = `SELECT PatientRiskID FROM tblPatient_RiskFactors WHERE PatientID = '${patientRiskFactor.PatientID}' AND RiskID = '${patientRiskFactor.RiskID}' AND DateIdentified = '${patientRiskFactor.DateIdentified}'`;
 
-    const result = await runQuery(query);
+    const riskValidation = await runQuery(query);
 
-    //console.log(result);
+    //console.log(riskValidation);
 
-    if (result.affected_rows > 0) {
+    // If the riskValidation query failed, or if the query returned a list of more than 0 - treat it as an error
+    if (!riskValidation || !riskValidation.success || riskValidation.data.length > 0) {
         return "Patient has already been assigned this risk for the date identified!";
     }
 
