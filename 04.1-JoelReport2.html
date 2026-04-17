@@ -134,15 +134,16 @@
         const table = document.createElement('table');
 
         ///////////// HEADERS /////////////
+        const headings = ["Patient ID", "Patient Forename", "Patient Surname", "Total Appointments"];
 
         let headerRow = document.createElement('tr');
 
         // Loop through the attribute values of the first data object
-        for (let key in resultData[0]) {
+        for (let key in headings) {
           // Create a table header element
           let tableHead = document.createElement('th');
           // Add the key value to the header element
-          tableHead.textContent = key;
+          tableHead.textContent = headings[key];
           // Append it to the header row
           headerRow.appendChild(tableHead);
         }
