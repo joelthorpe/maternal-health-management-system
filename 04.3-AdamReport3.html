@@ -7,6 +7,7 @@
 
   <title>Adam Report 3</title>
   <link rel="stylesheet" href="css\style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 <body>
@@ -14,16 +15,256 @@
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="04-ReportsDashboard.html">Reports Dashboard</a>
     <span class="nav-separator"></span>
-    <a href="04.1-JoelReports.html">Joel Reports</a>
-    <a href="04.2-MartinReports.html">Martin Reports</a>
-    <a href="04.3-AdamReports.html">Adam Reports</a>
-    <a href="04.4-CameronReports.html">Cameron Reports</a>
-    <a href="04.5-JonnyReports.html">Jonny Reports</a>
+    <div class="nav-dropdown">
+      <a href="04.1-JoelReports.html">Joel Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.1-JoelReport1.html">Report 1</a>
+        <a href="04.1-JoelReport2.html">Report 2</a>
+        <a href="04.1-JoelReport3.html">Report 3</a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <a href="04.2-MartinReports.html">Martin Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.2-MartinReport1.html">Report 1</a>
+        <a href="04.2-MartinReport2.html">Report 2</a>
+        <a href="04.2-MartinReport3.html">Report 3</a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <a href="04.3-AdamReports.html">Adam Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.3-AdamReport1.html">Report 1</a>
+        <a href="04.3-AdamReport2.html">Report 2</a>
+        <a href="04.3-AdamReport3.html">Report 3</a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <a href="04.4-CameronReports.html">Cameron Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.4-CameronReport1.html">Report 1</a>
+        <a href="04.4-CameronReport2.html">Report 2</a>
+        <a href="04.4-CameronReport3.html">Report 3</a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <a href="04.5-JonnyReports.html">Jonny Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.5-JonnyReport1.html">Report 1</a>
+        <a href="04.5-JonnyReport2.html">Report 2</a>
+        <a href="04.5-JonnyReport3.html">Report 3</a>
+      </div>
+    </div>
   </div>
 
   <div class="dashboard-bg">
+    <div id="actionResult"></div>
+    <button class="scroll-btn" onclick="scrollToContainer()">
+      ↓ View Chart
+    </button>
+    <div class="main layout">
+      <div class="form">
+          <h2>Report Parameters</h2>
+          <form id="reportForm">
+            <label for="IncludeZeroAppointments">Include midwives with 0 appointments</label>
+            <select id="IncludeZeroAppointments">
+              <option value="true" selected>True</option>
+              <option value="false">False</option>
+            </select>
+
+            <label for="SortDirection">Sort Direction</label>
+            <select id="SortDirection">
+              <option value="DESC" selected>Descending</option>
+              <option value="ASC">Ascending</option>
+            </select>
+
+            <button type="submit">Run Report</button>
+          </form>
+        </div>
+
+        <div class="form">
+          <h2>Report Output</h2>
+          <div class="table-wrapper">
+            <div id="tblOutput"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form" id="chartSection" style="margin-top: 20px; max-width: 100%; background: white;">
+      <h2 style="font-family: 'Altone', sans-serif;">Chart Visualisation</h2>
+      <div style="width: 100%; height: 400px;">
+        <canvas id="reportChart"></canvas>
+      </div>
+    </div>
   </div>
 
   <script src="js/script.js"></script>
+  <script>
+    function scrollToContainer() {
+      const chartSection = document.getElementById('chartSection');
+      chartSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const reportForm = document.getElementById("reportForm");
+    const outputDiv = document.getElementById("tblOutput");
+    const actionResult = document.getElementById("actionResult");
+    const chartCanvas = document.getElementById("reportChart");
+    let chartInstance = null;
+
+    const showActionMessage = (text) => {
+      actionResult.textContent = text;
+      actionResult.style.display = "block";
+    };
+
+    const clearActionMessage = () => {
+      actionResult.textContent = "";
+      actionResult.style.display = "none";
+    };
+
+    const buildReportTable = (data) => {
+      outputDiv.innerHTML = "";
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+
+      ["Clinic Name", "Midwife Name", "Total Appointments"].forEach((heading) => {
+        const th = document.createElement("th");
+        th.textContent = heading;
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      if (!data || data.length === 0) {
+        const emptyRow = document.createElement("tr");
+        const emptyCell = document.createElement("td");
+        emptyCell.colSpan = 3;
+        emptyCell.textContent = "No results found.";
+        emptyRow.appendChild(emptyCell);
+        tbody.appendChild(emptyRow);
+      } else {
+        data.forEach((row) => {
+          const tr = document.createElement("tr");
+          const clinicCell = document.createElement("td");
+          clinicCell.textContent = row.ClinicName || "";
+          const midwifeCell = document.createElement("td");
+          midwifeCell.textContent = row.MidwifeName || "";
+          const totalCell = document.createElement("td");
+          totalCell.textContent = row.TotalAppointments || 0;
+          tr.appendChild(clinicCell);
+          tr.appendChild(midwifeCell);
+          tr.appendChild(totalCell);
+          tbody.appendChild(tr);
+        });
+      }
+
+      table.appendChild(tbody);
+      outputDiv.appendChild(table);
+
+      buildChart(data);
+    };
+
+    const buildChart = (data) => {
+      if (!data || data.length === 0) {
+        if (chartInstance) {
+          chartInstance.destroy();
+          chartInstance = null;
+        }
+        return;
+      }
+
+      const midwifeLabels = data.map((row) => row.MidwifeName || "");
+      const counts = data.map((row) => row.TotalAppointments || 0);
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      const ctx = chartCanvas.getContext("2d");
+      chartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: midwifeLabels,
+          datasets: [
+            {
+              label: "Total Appointments",
+              data: counts,
+              backgroundColor: "rgba(40, 167, 69, 0.7)",
+              borderColor: "rgba(40, 167, 69, 1)",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: "top",
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Total Appointments",
+              },
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Midwife",
+              },
+            },
+          },
+        },
+      });
+    };
+
+    const runReport = async () => {
+      clearActionMessage();
+      const includeZeroAppointments = document.getElementById("IncludeZeroAppointments").value === "true";
+      const sortDirection = document.getElementById("SortDirection").value === "ASC" ? "ASC" : "DESC";
+
+      const havingClause = includeZeroAppointments ? "HAVING COUNT(a.AppointmentID) >= 0" : "HAVING COUNT(a.AppointmentID) > 0";
+      const sql = `SELECT 
+    c.ClinicName,
+    CONCAT(s.StaffForename, ' ', s.StaffSurname) AS MidwifeName,
+    COUNT(a.AppointmentID) AS TotalAppointments
+FROM tblStaff s
+INNER JOIN tblRole r ON s.RoleID = r.RoleID
+INNER JOIN tblClinic c ON s.ClinicID = c.ClinicID
+LEFT JOIN tblAppointment a ON s.StaffID = a.StaffID
+WHERE r.RoleName = 'Midwife'
+GROUP BY c.ClinicName, s.StaffID, s.StaffForename, s.StaffSurname
+${havingClause}
+ORDER BY TotalAppointments ${sortDirection};`;
+
+      const result = await runQuery(sql);
+      if (!result || !result.success) {
+        showActionMessage(result?.error || "Unable to run report.");
+        outputDiv.innerHTML = "";
+        return;
+      }
+
+      buildReportTable(result.data || []);
+      if (!result.data || result.data.length === 0) {
+        showActionMessage("No rows returned for these parameters.");
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      reportForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        await runReport();
+      });
+      await runReport();
+    });
+  </script>
 </body>
 </html>

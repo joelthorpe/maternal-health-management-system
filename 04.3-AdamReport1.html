@@ -15,16 +15,53 @@
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="04-ReportsDashboard.html">Reports Dashboard</a>
     <span class="nav-separator"></span>
-    <a href="04.1-JoelReports.html">Joel Reports</a>
-    <a href="04.2-MartinReports.html">Martin Reports</a>
-    <a href="04.3-AdamReports.html">Adam Reports</a>
-    <a href="04.4-CameronReports.html">Cameron Reports</a>
-    <a href="04.5-JonnyReports.html">Jonny Reports</a>
+    <div class="nav-dropdown">
+      <a href="04.1-JoelReports.html">Joel Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.1-JoelReport1.html">Report 1</a>
+        <a href="04.1-JoelReport2.html">Report 2</a>
+        <a href="04.1-JoelReport3.html">Report 3</a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <a href="04.2-MartinReports.html">Martin Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.2-MartinReport1.html">Report 1</a>
+        <a href="04.2-MartinReport2.html">Report 2</a>
+        <a href="04.2-MartinReport3.html">Report 3</a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <a href="04.3-AdamReports.html">Adam Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.3-AdamReport1.html">Report 1</a>
+        <a href="04.3-AdamReport2.html">Report 2</a>
+        <a href="04.3-AdamReport3.html">Report 3</a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <a href="04.4-CameronReports.html">Cameron Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.4-CameronReport1.html">Report 1</a>
+        <a href="04.4-CameronReport2.html">Report 2</a>
+        <a href="04.4-CameronReport3.html">Report 3</a>
+      </div>
+    </div>
+    <div class="nav-dropdown">
+      <a href="04.5-JonnyReports.html">Jonny Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.5-JonnyReport1.html">Report 1</a>
+        <a href="04.5-JonnyReport2.html">Report 2</a>
+        <a href="04.5-JonnyReport3.html">Report 3</a>
+      </div>
+    </div>
   </div>
 
   <div class="dashboard-bg">
     <div id="actionResult"></div>
-    <button class="scroll-btn" id="scrollToCharts">Charts ↓</button>
+    <button class="scroll-btn" onclick="scrollToContainer()">
+      ↓ View Chart
+    </button>
     <div class="main layout">
       <div class="form">
           <h2>Report Parameters</h2>
@@ -52,7 +89,7 @@
     </div>
 
     <div class="form" id="chartSection" style="margin-top: 20px; max-width: 100%; background: white;">
-      <h2 style="font-family: 'Altone', sans-serif;">Chart Visualization</h2>
+      <h2 style="font-family: 'Altone', sans-serif;">Chart Visualisation</h2>
       <div style="width: 100%; height: 400px;">
         <canvas id="reportChart"></canvas>
       </div>
@@ -61,6 +98,11 @@
 
   <script src="js/script.js"></script>
   <script>
+    function scrollToContainer() {
+      const chartSection = document.getElementById('chartSection');
+      chartSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
     const reportForm = document.getElementById("reportForm");
     const outputDiv = document.getElementById("tblOutput");
     const actionResult = document.getElementById("actionResult");
@@ -183,7 +225,17 @@
       const threshold = Number(document.getElementById("RiskSeverityThreshold").value) || 7;
       const sortDirection = document.getElementById("SortDirection").value === "ASC" ? "ASC" : "DESC";
 
-      const sql = `SELECT c.ClinicName, COUNT(DISTINCT pr.PatientID) AS HighRiskPatientCount FROM tblClinic c INNER JOIN tblPatient p ON c.ClinicID = p.ClinicID LEFT JOIN tblPatient_RiskFactors pr ON p.PatientID = pr.PatientID AND pr.RiskSeverity >= ${threshold} GROUP BY c.ClinicName ORDER BY HighRiskPatientCount ${sortDirection};`;
+      const sql = `SELECT
+      c.ClinicName,
+      COUNT(DISTINCT pr.PatientID) AS HighRiskPatientCount
+FROM tblClinic c
+INNER JOIN tblPatient p
+      ON c.ClinicID = p.ClinicID
+LEFT JOIN tblPatient_RiskFactors pr
+      ON p.PatientID = pr.PatientID
+      AND pr.RiskSeverity >= ${threshold}
+GROUP BY c.ClinicName
+ORDER BY HighRiskPatientCount ${sortDirection};`;
 
       const result = await runQuery(sql);
       if (!result || !result.success) {
