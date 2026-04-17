@@ -263,10 +263,11 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 - displayFields: Any additional fields to be displayed alongside the field, mainly used for Staff and Patient Forename + Surname
 - tableName: The table which the field resides in
 - distinct: Useful if the field being used for the dropdown is NOT a primary key, defaulted to false
+- displayAll: Useful if wanting to display all the results, defaulted to false
 
 - Example Format: createDropdownOptions(document.getElementById("StaffID"), "StaffID", "tblStaff", ["StaffForename", "StaffSurname"]);
 */
-const createDropdownOptions = async (htmlSelectElement, field, tableName, displayFields = null, distinct = false)=>{
+const createDropdownOptions = async (htmlSelectElement, field, tableName, displayFields = null, distinct = false, displayAll = false)=>{
     // Gets the relating name field for the table if it ends in ID
     if (!displayFields && field.endsWith("ID")) {
         // Ensures the fields are stored within an Array
@@ -308,6 +309,14 @@ const createDropdownOptions = async (htmlSelectElement, field, tableName, displa
     defaultOption.textContent = `Select a ${field}`;
     // adds it to the select to be able to see that option
     htmlSelectElement.appendChild(defaultOption);
+
+    // Creates the display all option for the htmlSelectElement
+    if (displayAll) {
+        const displayAllOption = document.createElement("option");
+        displayAllOption.value = "";
+        displayAllOption.textContent = '--- Display All ---';
+        htmlSelectElement.appendChild(displayAllOption);
+    }
 
     // this loops through the data returned by the sql query
     // The data being the field selected returned as a list of objects
