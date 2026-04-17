@@ -7,6 +7,7 @@
 
   <title>Adam Report 1</title>
   <link rel="stylesheet" href="css\style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 <body>
@@ -22,8 +23,188 @@
   </div>
 
   <div class="dashboard-bg">
+    <div id="actionResult"></div>
+    <button class="scroll-btn" id="scrollToCharts">Charts ↓</button>
+    <div class="main layout">
+      <div class="form">
+          <h2>Report Parameters</h2>
+          <form id="reportForm">
+            <label for="RiskSeverityThreshold">Risk Severity Threshold</label>
+            <input type="number" id="RiskSeverityThreshold" value="7" min="1" max="10" step="1" required>
+
+            <label for="SortDirection">Sort Direction</label>
+            <select id="SortDirection">
+              <option value="DESC" selected>Descending</option>
+              <option value="ASC">Ascending</option>
+            </select>
+
+            <button type="submit">Run Report</button>
+          </form>
+        </div>
+
+        <div class="form">
+          <h2>Report Output</h2>
+          <div class="table-wrapper">
+            <div id="tblOutput"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form" id="chartSection" style="margin-top: 20px; max-width: 100%; background: white;">
+      <h2 style="font-family: 'Altone', sans-serif;">Chart Visualization</h2>
+      <div style="width: 100%; height: 400px;">
+        <canvas id="reportChart"></canvas>
+      </div>
+    </div>
   </div>
 
   <script src="js/script.js"></script>
+  <script>
+    const reportForm = document.getElementById("reportForm");
+    const outputDiv = document.getElementById("tblOutput");
+    const actionResult = document.getElementById("actionResult");
+    const chartCanvas = document.getElementById("reportChart");
+    let chartInstance = null;
+
+    const showActionMessage = (text) => {
+      actionResult.textContent = text;
+      actionResult.style.display = "block";
+    };
+
+    const clearActionMessage = () => {
+      actionResult.textContent = "";
+      actionResult.style.display = "none";
+    };
+
+    const buildReportTable = (data) => {
+      outputDiv.innerHTML = "";
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+
+      ["Clinic Name", "High Risk Patient Count"].forEach((heading) => {
+        const th = document.createElement("th");
+        th.textContent = heading;
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      if (!data || data.length === 0) {
+        const emptyRow = document.createElement("tr");
+        const emptyCell = document.createElement("td");
+        emptyCell.colSpan = 2;
+        emptyCell.textContent = "No results found.";
+        emptyRow.appendChild(emptyCell);
+        tbody.appendChild(emptyRow);
+      } else {
+        data.forEach((row) => {
+          const tr = document.createElement("tr");
+          const clinicCell = document.createElement("td");
+          clinicCell.textContent = row.ClinicName || "";
+          const countCell = document.createElement("td");
+          countCell.textContent = row.HighRiskPatientCount || 0;
+          tr.appendChild(clinicCell);
+          tr.appendChild(countCell);
+          tbody.appendChild(tr);
+        });
+      }
+
+      table.appendChild(tbody);
+      outputDiv.appendChild(table);
+
+      buildChart(data);
+    };
+
+    const buildChart = (data) => {
+      if (!data || data.length === 0) {
+        if (chartInstance) {
+          chartInstance.destroy();
+          chartInstance = null;
+        }
+        return;
+      }
+
+      const clinicNames = data.map((row) => row.ClinicName || "");
+      const counts = data.map((row) => row.HighRiskPatientCount || 0);
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      const ctx = chartCanvas.getContext("2d");
+      chartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: clinicNames,
+          datasets: [
+            {
+              label: "High Risk Patient Count",
+              data: counts,
+              backgroundColor: "rgba(40, 167, 69, 0.7)",
+              borderColor: "rgba(40, 167, 69, 1)",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: "top",
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Count",
+              },
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Clinic Name",
+              },
+            },
+          },
+        },
+      });
+    };
+
+    const runReport = async () => {
+      clearActionMessage();
+      const threshold = Number(document.getElementById("RiskSeverityThreshold").value) || 7;
+      const sortDirection = document.getElementById("SortDirection").value === "ASC" ? "ASC" : "DESC";
+
+      const sql = `SELECT c.ClinicName, COUNT(DISTINCT pr.PatientID) AS HighRiskPatientCount FROM tblClinic c INNER JOIN tblPatient p ON c.ClinicID = p.ClinicID LEFT JOIN tblPatient_RiskFactors pr ON p.PatientID = pr.PatientID AND pr.RiskSeverity >= ${threshold} GROUP BY c.ClinicName ORDER BY HighRiskPatientCount ${sortDirection};`;
+
+      const result = await runQuery(sql);
+      if (!result || !result.success) {
+        showActionMessage(result?.error || "Unable to run report.");
+        outputDiv.innerHTML = "";
+        return;
+      }
+
+      buildReportTable(result.data || []);
+      if (!result.data || result.data.length === 0) {
+        showActionMessage("No rows returned for these parameters.");
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      reportForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        await runReport();
+      });
+      await runReport();
+    });
+  </script>
 </body>
 </html>
