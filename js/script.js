@@ -165,6 +165,10 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                     // This return stops the code here so it doesnt delete it from the table
                     return;
                 }
+
+                // Lock the delete button to prevent double delete submission
+                deleteBtn.disabled = true;
+
                 // Sets the deletion SQL
                 let deleteSql = `DELETE FROM ${SQLtableName} WHERE ${fields[0]} = "${data[fields[0]]}";`;
 
@@ -181,6 +185,9 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                 if(deleteResult && deleteResult.error)
                 {
                     alert(deleteResult.error);
+
+                    // Unlock the delete button so the user can reattempt
+                    deleteBtn.disabled = false;
                 }
 
             })
@@ -375,6 +382,9 @@ const handleFormSubmission = (divElement, formName, fields, tableName, primaryKe
     // Handles Form Submission
     formName.addEventListener("submit", async (event) => {
         event.preventDefault(); // Prevents page reload
+
+        // Locks the submission button to prevent double clicks
+        document.getElementById("btnSubmit").disabled = true;
         
         // Object to hold form data
         const formData = {};
@@ -389,6 +399,10 @@ const handleFormSubmission = (divElement, formName, fields, tableName, primaryKe
         const validationMessage = await validateFunc(formData);
         if (validationMessage) {
             displayMessage(validationMessage, messageDiv);
+
+            // Unlocks the submission button
+            document.getElementById("btnSubmit").disabled = false;
+
             return;
         }
 
@@ -528,6 +542,9 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = n
 
     // Generate the latest primary key ID for the form
     presentLatestID(document.getElementById(fields[0]), tableName, fields[0] , primaryKeyPrefix);
+
+    // Unlocks the submission button
+    document.getElementById("btnSubmit").disabled = false;
 
     // Changes text on the button to read "Save Record" (default text)
     document.getElementById("btnSubmit").textContent = "Save Record";
