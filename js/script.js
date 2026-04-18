@@ -7,7 +7,6 @@ const runQuery = async (sql) => {
     const url = "https://amckelvey06.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
 
     try{
-
         // This sends the SQL query to the database
         const response = await fetch(url, {
             method: "POST",
@@ -19,7 +18,6 @@ const runQuery = async (sql) => {
         if (!response.ok) {
             throw new Error("HTTP error " + response.status);
         }
-
 
         // Converts the response to JSON format
         const result = await response.json();
@@ -151,8 +149,6 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                     }
                     
                 }
-
-
 
                 // Creates a pop up at the top of the page to confirm the deletion of the clinic
                 // The data[fields[0]] gets the ID of the entity since its the first item in the fields (or should be)
@@ -741,6 +737,7 @@ const validatePatientRiskFactors = async (patientRiskFactor) => {
     const isTreated = Number(patientRiskFactor.IsTreated);
 
     //////////////// Risk Severity Validation: ////////////////
+    // Helps prevent against inspect element changes for the numerical dropdown
 
     if (typeof riskSeverity !== "number" || isNaN(riskSeverity)) {
         return "Risk Severity is required!"
@@ -760,6 +757,7 @@ const validatePatientRiskFactors = async (patientRiskFactor) => {
     }
 
     //////////////// Is Treated Validation: ////////////////
+    // Helps prevent against inspect element changes for the numerical dropdown
 
     if (typeof isTreated !== "number" || isNaN(isTreated)) {
         return "Is Treated is required!"

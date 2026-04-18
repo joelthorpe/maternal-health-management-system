@@ -36,13 +36,13 @@
                 <select id="RiskID" required></select>
                 <!-- Risk Severity input-->
                 <label for="RiskSeverity">Risk Severity</label>
-                <input type="number" id="RiskSeverity" value="0" required>
+                <select id="RiskSeverity" required></select>
                 <!-- Date Identified input-->
                 <label for="DateIdentified">Date Identified</label>
                 <input type="date" id="DateIdentified" required>
                 <!-- Is Treated input-->
                 <label for="IsTreated">Is Treated</label>
-                <input type="number" id="IsTreated" value="0" required>
+                <select id="IsTreated" required></select>
                 
                 <ul id="btnList">
                   <li><button type="submit" id="btnSubmit">Save Record</button></li>
@@ -66,12 +66,39 @@
   const tableName = "tblPatient_RiskFactors";
   const primaryKeyPrefix = "PR";
 
+  /* Method to help with populating numerical dropdowns
+    - elementId: The ID of the Element to fill
+    - defaultText: The text to display to the user
+    - min: The minimum (lower boundary) value to show in the dropdown
+    - max: The maximum (upper boundary) value to show in the dropdown
+  */
+  const populateNumericDropdown = (elementId, defaultText, min, max) => {
+    const dropdown = document.getElementById(elementId);
+
+    // Clear existing options to prevent duplicates
+    const defaultOption = document.createElement("option");
+    defaultOption.value = '';
+    defaultOption.textContent = defaultText;
+    dropdown.appendChild(defaultOption);
+
+    // Loop through provided range and populate dropdown options
+    for (let i = min; i <= max; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = i;
+      dropdown.appendChild(option);
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", async () => {
     fillTable(divElement, tableName, fields, messageDiv, primaryKeyPrefix, formName);
     presentLatestID(document.getElementById("PatientRiskID"), tableName, "PatientRiskID", primaryKeyPrefix);
     
     createDropdownOptions(document.getElementById("PatientID"), "PatientID", "tblPatient", ["PatientForename", "PatientSurname"]);
     createDropdownOptions(document.getElementById("RiskID"), "RiskID", "tblRiskFactors");
+    
+    populateNumericDropdown("RiskSeverity", "Select a Risk Severity", 1, 10);
+    populateNumericDropdown("IsTreated", "Select Treatment Status", 0, 1);
 
     handleFormSubmission(divElement, formName, fields, tableName, primaryKeyPrefix, validatePatientRiskFactors, messageDiv);
   })
