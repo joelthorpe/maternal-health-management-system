@@ -175,8 +175,8 @@
       event.preventDefault();
 
       // Define SQL Queries
-      let sql = `SELECT ClinicName, TotalRisksIdentified, TotalRisksTreated, (TotalRisksTreated / TotalRisksIdentified) * 100 AS SuccessPercentage FROM view_ClinicRiskTreatments WHERE TotalRisksIdentified > 0`;
       const viewSQL = `CREATE OR REPLACE VIEW view_ClinicRiskTreatments AS SELECT c.ClinicID, c.ClinicName, COUNT(pr.PatientRiskID) AS TotalRisksIdentified, SUM(pr.IsTreated) AS TotalRisksTreated FROM tblClinic c INNER JOIN tblPatient p ON c.ClinicID = p.ClinicID INNER JOIN tblPatient_RiskFactors pr on p.PatientID = pr.PatientID GROUP BY c.ClinicID, c.ClinicName;`
+      let sql = `SELECT ClinicName, TotalRisksIdentified, TotalRisksTreated, (TotalRisksTreated / TotalRisksIdentified) * 100 AS SuccessPercentage FROM view_ClinicRiskTreatments WHERE TotalRisksIdentified > 0`;
 
       const clinicNameValue = document.querySelector("#clinicName").value;
 

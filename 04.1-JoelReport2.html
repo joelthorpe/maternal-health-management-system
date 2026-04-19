@@ -132,7 +132,7 @@
         const table = document.createElement('table');
 
         ///////////// HEADERS /////////////
-        const headings = ["Patient ID", "Patient Forename", "Patient Surname", "Total Appointments"];
+        const headings = ["Patient ID", "Patient Forename", "Patient Surname", "Total Appointments", "Max Risk Severity"];
 
         let headerRow = document.createElement('tr');
 
@@ -180,7 +180,7 @@
       event.preventDefault();
 
       // Define SQL Query
-      let sql = `SELECT p.PatientID, p.PatientForename, p.PatientSurname, COUNT(DISTINCT a.AppointmentID) AS TotalAppointments FROM tblPatient p INNER JOIN tblPatient_RiskFactors pr on p.PatientID = pr.PatientID LEFT JOIN tblAppointment a ON p.PatientID = a.PatientID WHERE pr.IsTreated = 0`;
+      let sql = `SELECT p.PatientID, p.PatientForename, p.PatientSurname, COUNT(DISTINCT a.AppointmentID) AS TotalAppointments, MAX(pr.RiskSeverity) AS HighestRiskLevel FROM tblPatient p INNER JOIN tblPatient_RiskFactors pr on p.PatientID = pr.PatientID LEFT JOIN tblAppointment a ON p.PatientID = a.PatientID WHERE pr.IsTreated = 0`;
 
       const riskSeverityValue = document.querySelector("#riskSeverity").value;
 
@@ -189,7 +189,7 @@
         sql += ` AND pr.RiskSeverity >= '${riskSeverityValue}'`;
       }
 
-      sql += ` GROUP BY p.PatientID, p.PatientForename, p.PatientSurname HAVING COUNT(DISTINCT a.AppointmentID) = 0;`;
+      sql += ` GROUP BY p.PatientID, p.PatientForename, p.PatientSurname HAVING TotalAppointments = 0 ORDER BY HighestRiskLevel DESC;`;
 
       // Runs SQL for the report
       const result = await runQuery(sql);
