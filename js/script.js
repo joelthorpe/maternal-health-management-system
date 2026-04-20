@@ -770,7 +770,12 @@ const validatePatientRiskFactors = async (patientRiskFactor) => {
     //////////////// UNIQUE Risk Validation: ////////////////
 
     // Ensure patient hasn't already been assigned the specific risk factor on the same date
-    const query = `SELECT PatientRiskID FROM tblPatient_RiskFactors WHERE PatientID = '${patientRiskFactor.PatientID}' AND RiskID = '${patientRiskFactor.RiskID}' AND DateIdentified = '${patientRiskFactor.DateIdentified}'`;
+    let query = `SELECT PatientRiskID FROM tblPatient_RiskFactors WHERE PatientID = '${patientRiskFactor.PatientID}' AND RiskID = '${patientRiskFactor.RiskID}' AND DateIdentified = '${patientRiskFactor.DateIdentified}'`;
+
+    // Ensures that the current records ID is ignored when updating the record
+    if (patientRiskFactor.PatientRiskID) {
+        query += ` AND PatientRiskID != '${patientRiskFactor.PatientRiskID}'`;
+    }
 
     const riskValidation = await runQuery(query);
 
