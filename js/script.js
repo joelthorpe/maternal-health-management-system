@@ -720,7 +720,7 @@ const validateRiskFactors = (riskFactor) => {
     }
 
     if (riskDescription.length > 150) {
-        return "Risk Name needs to be 150 characters or less."
+        return "Risk Description needs to be 150 characters or less."
     }
 
     // If all checks have passed, return null
