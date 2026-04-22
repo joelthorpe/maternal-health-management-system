@@ -27,6 +27,7 @@ const runQuery = async (sql) => {
     }
     catch(error){
         alert("Error:" + error.message);
+        return;
     }
 } 
 
@@ -138,11 +139,11 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                             // Checks if the error is because the field isnt in the table, could be improved 
                             if(checkResult.error == `Error: Unknown column '${fields[0]}' in 'SELECT'`)
                             {
-                                alert("Error: ID not present in table");
+                                //alert("Error: ID not present in table");
                             }
                             else
                             {
-                                alert("Error: " + checkResult.error);
+                                //alert("Error: " + checkResult.error);
                             }
                         }
 
@@ -184,6 +185,8 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 
                     // Unlock the delete button so the user can reattempt
                     deleteBtn.disabled = false;
+
+                    return;
                 }
 
             })
@@ -464,6 +467,7 @@ const handleFormSubmission = (divElement, formName, fields, tableName, primaryKe
                 return;
             } else {
                 alert(result.error);
+                return;
             }
         // Update Record Logic
         } else {
@@ -517,6 +521,7 @@ const handleFormSubmission = (divElement, formName, fields, tableName, primaryKe
                 return;
             } else {
                 alert(result.error);
+                return;
             }
         }
       
@@ -542,6 +547,7 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = n
         } else {
             // Else, tell the user something went wrong
             alert(`Invalid Field: ${field}`)
+            return;
         }
     }
 
