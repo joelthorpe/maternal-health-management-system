@@ -103,7 +103,7 @@
       const regionID = document.querySelector("#RegionID");
       const sql = `SELECT rg.RegionName, rf.RiskName, COUNT(pr.RiskID) AS AmountIdentified FROM tblRegion rg CROSS JOIN tblRiskFactors rf LEFT JOIN tblClinic c ON c.RegionID = rg.RegionID LEFT JOIN tblPatient p ON p.ClinicID = c.ClinicID LEFT JOIN tblPatient_RiskFactors pr ON pr.PatientID = p.PatientID AND pr.RiskID = rf.RiskID WHERE rg.RegionID = "${regionID.value}" GROUP BY rg.RegionName, rf.RiskName ;` ;
       const result = await runQuery(sql);
-      console.log(result);
+      //console.log(result);
 
       if(result && result.success)
       {
