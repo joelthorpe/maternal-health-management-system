@@ -56,9 +56,54 @@
     </div>
   </div>
 
-  <div class="dashboard-bg">
+<div class="report-container">
+    <h1>Report 1: Most Common Risk Factors</h1>
+    <p>This report identifies the most common pregnancy risk factors across all clinics.</p>
+
+    <button onclick="runReport()">Run Report</button>
+
+    <div id="output"></div>
   </div>
 
-  <script src="js/script.js"></script>
-</body>
-</html>
+  <script>
+    function runReport() {
+      const query = `
+        SELECT rf.RiskDescription,
+            COUNT(pr.RiskID) AS risk_occurrence
+        FROM tblPatient_RiskFactors pr
+        INNER JOIN tblRiskFactors rf
+            ON pr.RiskID = rf.RiskID
+        GROUP BY rf.RiskDescription
+        ORDER BY risk_occurrence DESC
+        LIMIT 3;
+      `;
+
+      fetch("https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php", {
+        method: "POST",
+        body: new URLSearchParams({ query: query })
+      })
+      .then(response => response.json())
+      .then(data => {
+        let output = "<table border='1'><tr>";
+
+        for (let key in data[0]) {
+          output += `<th>${key}</th>`;
+        }
+        output += "</tr>";
+
+
+        data.forEach(row => {
+          output += "<tr>";
+          for (let key in row) {
+            output += `<td>${row[key]}</td>`;
+          }
+          output += "</tr>";
+        });
+
+        output += "</table>";
+
+        document.getElementById("output").innerHTML = output;
+      })
+      .catch(error => console.error(error));
+    }
+  </script>
