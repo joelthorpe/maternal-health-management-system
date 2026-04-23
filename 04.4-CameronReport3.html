@@ -6,14 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Cameron Report 3</title>
-  <link rel="stylesheet" href="css\style.css">
-
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+
+  <!-- NAVBAR -->
   <div class="navbar">
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="04-ReportsDashboard.html">Reports Dashboard</a>
     <span class="nav-separator"></span>
+
     <div class="nav-dropdown">
       <a href="04.1-JoelReports.html">Joel Reports</a>
       <div class="dropdown-menu">
@@ -22,6 +25,7 @@
         <a href="04.1-JoelReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.2-MartinReports.html">Martin Reports</a>
       <div class="dropdown-menu">
@@ -30,6 +34,7 @@
         <a href="04.2-MartinReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.3-AdamReports.html">Adam Reports</a>
       <div class="dropdown-menu">
@@ -38,6 +43,7 @@
         <a href="04.3-AdamReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.4-CameronReports.html">Cameron Reports</a>
       <div class="dropdown-menu">
@@ -46,6 +52,7 @@
         <a href="04.4-CameronReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.5-JonnyReports.html">Jonny Reports</a>
       <div class="dropdown-menu">
@@ -57,8 +64,140 @@
   </div>
 
   <div class="dashboard-bg">
+
+    <div class="text-box">
+      <h2>Cameron Report 3 – Patients With Multiple Risk Factors</h2>
+      <p>
+        This report identifies patients who have multiple risk factors recorded, helping staff prioritise
+        individuals who may require closer monitoring or additional support.
+      </p>
+    </div>
+
+    <div id="actionResult"></div>
+
+    <div class="main layout">
+
+      <div class="form">
+        <h2>Filter Options</h2>
+        <form id="riskForm">
+
+          <label for="MinRisks">Minimum Number of Risks</label>
+          <select id="MinRisks" style="width: 180px;">
+            <option value="2" selected>2 or more</option>
+            <option value="3">3 or more</option>
+            <option value="4">4 or more</option>
+          </select>
+
+          <button type="submit" id="btnSubmit">Run Report</button>
+        </form>
+      </div>
+
+      <div class="form">
+        <h2>Patients With Multiple Risks</h2>
+        <div class="table-wrapper">
+          <div id="tblOutput"></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <script src="js/script.js"></script>
+
+  <script>
+    const form = document.querySelector("#riskForm");
+    const outputDiv = document.querySelector("#tblOutput");
+    const actionResult = document.querySelector("#actionResult");
+
+    const showActionMessage = (msg) => {
+      actionResult.textContent = msg;
+      actionResult.style.display = "block";
+    };
+
+    const clearActionMessage = () => {
+      actionResult.textContent = "";
+      actionResult.style.display = "none";
+    };
+
+    const buildTable = (data) => {
+      outputDiv.innerHTML = "";
+
+      const table = document.createElement("table");
+      const header = document.createElement("tr");
+
+      ["Patient Name", "Clinic", "Number of Risks"].forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h;
+        header.appendChild(th);
+      });
+
+      table.appendChild(header);
+
+      if (!data || data.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 3;
+        cell.textContent = "No patients match this criteria.";
+        row.appendChild(cell);
+        table.appendChild(row);
+      } else {
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+
+          const td1 = document.createElement("td");
+          td1.textContent = row.PatientName;
+
+          const td2 = document.createElement("td");
+          td2.textContent = row.ClinicName;
+
+          const td3 = document.createElement("td");
+          td3.textContent = row.RiskCount;
+
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tr.appendChild(td3);
+
+          table.appendChild(tr);
+        });
+      }
+
+      outputDiv.appendChild(table);
+    };
+
+    const runReport = async () => {
+      clearActionMessage();
+
+      const minRisks = document.querySelector("#MinRisks").value;
+
+      const sql =
+        "SELECT " +
+        "CONCAT(p.PatientForename, ' ', p.PatientSurname) AS PatientName, " +
+        "c.ClinicName, " +
+        "COUNT(pr.RiskID) AS RiskCount " +
+        "FROM tblPatient p " +
+        "LEFT JOIN tblClinic c ON c.ClinicID = p.ClinicID " +
+        "LEFT JOIN tblPatient_RiskFactors pr ON pr.PatientID = p.PatientID " +
+        "GROUP BY p.PatientID, PatientName, c.ClinicName " +
+        "HAVING RiskCount >= " + minRisks + " " +
+        "ORDER BY RiskCount DESC;";
+
+      const result = await runQuery(sql);
+
+      if (!result || !result.success) {
+        showActionMessage(result?.error || "Unable to run report.");
+        return;
+      }
+
+      buildTable(result.data);
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await runReport();
+    });
+
+    document.addEventListener("DOMContentLoaded", runReport);
+  </script>
+
 </body>
 </html>
