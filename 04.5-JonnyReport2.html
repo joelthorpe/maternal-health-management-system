@@ -72,34 +72,27 @@
 
   <script>
     function runReport() {
-      const query = `
-        SELECT
-            p.PatientID,
-            p.PatientForename,
-            p.PatientSurname,
-            COUNT(pr.RiskID) AS TotalRiskFactors
-        FROM tblPatient p
-        INNER JOIN tblPatient_RiskFactors pr
-            ON p.PatientID = pr.PatientID
-        GROUP BY p.PatientID, p.PatientForename, p.PatientSurname
-        HAVING COUNT(pr.RiskID) > 1
-        ORDER BY TotalRiskFactors DESC;
-      `;
+      const query = `SELECT p.PatientID, p.PatientForename, p.PatientSurname, COUNT(pr.RiskID) AS TotalRiskFactors FROM tblPatient p INNER JOIN tblPatient_RiskFactors pr ON p.PatientID = pr.PatientID GROUP BY p.PatientID, p.PatientForename, p.PatientSurname HAVING COUNT(pr.RiskID) > 1 ORDER BY TotalRiskFactors DESC;`;
 
       fetch("https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php", {
         method: "POST",
         body: new URLSearchParams({ query: query })
       })
       .then(response => response.json())
-      .then(data => {
+      .then(result => {
+        if (!result.success || !result.data || result.data.length === 0) {
+          document.getElementById("output").innerHTML = "No data available";
+          return;
+        }
+
         let output = "<table border='1'><tr>";
 
-        for (let key in data[0]) {
+        for (let key in result.data[0]) {
           output += `<th>${key}</th>`;
         }
         output += "</tr>";
 
-        data.forEach(row => {
+        result.data.forEach(row => {
           output += "<tr>";
           for (let key in row) {
             output += `<td>${row[key]}</td>`;
