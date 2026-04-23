@@ -6,14 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Cameron Report 1</title>
-  <link rel="stylesheet" href="css\style.css">
-
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
+
+  <!-- NAVBAR -->
   <div class="navbar">
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="04-ReportsDashboard.html">Reports Dashboard</a>
     <span class="nav-separator"></span>
+
     <div class="nav-dropdown">
       <a href="04.1-JoelReports.html">Joel Reports</a>
       <div class="dropdown-menu">
@@ -22,6 +26,7 @@
         <a href="04.1-JoelReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.2-MartinReports.html">Martin Reports</a>
       <div class="dropdown-menu">
@@ -30,6 +35,7 @@
         <a href="04.2-MartinReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.3-AdamReports.html">Adam Reports</a>
       <div class="dropdown-menu">
@@ -38,6 +44,7 @@
         <a href="04.3-AdamReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.4-CameronReports.html">Cameron Reports</a>
       <div class="dropdown-menu">
@@ -46,6 +53,7 @@
         <a href="04.4-CameronReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.5-JonnyReports.html">Jonny Reports</a>
       <div class="dropdown-menu">
@@ -57,8 +65,226 @@
   </div>
 
   <div class="dashboard-bg">
+
+    <!-- DESCRIPTION BOX -->
+    <div class="text-box">
+      <h2>Cameron Report 1 – Appointment Completion Rates by Clinic</h2>
+      <p>
+        This report shows how many appointments each clinic completes, helping identify performance,
+        workload differences, and clinics that may require additional support.
+      </p>
+    </div>
+
+    <!-- SCROLL BUTTON -->
+    <button onclick="scrollToChart()" style="margin-bottom: 20px;">
+      View Completion Rate Chart ↓
+    </button>
+
+    <div id="actionResult"></div>
+
+    <div class="main layout">
+
+      <!-- LEFT PANEL -->
+      <div class="form">
+        <h2>Sort Options</h2>
+        <form id="completionForm">
+
+          <label for="SortDirection">Sort by Completion Rate</label>
+          <select id="SortDirection" style="width: 180px;">
+            <option value="DESC" selected>Highest First</option>
+            <option value="ASC">Lowest First</option>
+          </select>
+
+          <button type="submit" id="btnSubmit">Run Report</button>
+        </form>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="form">
+        <h2>Clinic Completion Rates</h2>
+        <div class="table-wrapper">
+          <div id="tblOutput"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CHART SECTION -->
+    <div class="form" id="chartSection"
+      style="margin-top: 20px; padding: 20px; border-radius: 12px;
+             background: linear-gradient(135deg, #e8f4ff, #ffffff);">
+
+      <h2 style="font-family: 'Altone', sans-serif; border-bottom: 2px solid #0077cc; padding-bottom: 6px; color: black;">
+        Completion Rate Chart
+      </h2>
+
+      <div style="width: 100%; height: 420px;">
+        <canvas id="completionChart"></canvas>
+      </div>
+    </div>
+
   </div>
 
   <script src="js/script.js"></script>
+
+  <script>
+    function scrollToChart() {
+      document.getElementById("chartSection").scrollIntoView({ behavior: "smooth" });
+    }
+
+    const form = document.querySelector("#completionForm");
+    const outputDiv = document.querySelector("#tblOutput");
+    const actionResult = document.querySelector("#actionResult");
+    const chartCanvas = document.querySelector("#completionChart");
+    let chartInstance = null;
+
+    const showActionMessage = (msg) => {
+      actionResult.textContent = msg;
+      actionResult.style.display = "block";
+    };
+
+    const clearActionMessage = () => {
+      actionResult.textContent = "";
+      actionResult.style.display = "none";
+    };
+
+    const buildTable = (data) => {
+      outputDiv.innerHTML = "";
+
+      const table = document.createElement("table");
+      const header = document.createElement("tr");
+
+      ["Clinic Name", "Total Appointments", "Completed", "Completion %"].forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h;
+        header.appendChild(th);
+      });
+
+      table.appendChild(header);
+
+      if (!data || data.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 4;
+        cell.textContent = "No results found.";
+        row.appendChild(cell);
+        table.appendChild(row);
+      } else {
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+
+          const td1 = document.createElement("td");
+          td1.textContent = row.ClinicName;
+
+          const td2 = document.createElement("td");
+          td2.textContent = row.TotalAppointments;
+
+          const td3 = document.createElement("td");
+          td3.textContent = row.CompletedAppointments;
+
+          const td4 = document.createElement("td");
+          td4.textContent = Number(row.CompletionRate).toFixed(2) + "%";
+
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tr.appendChild(td3);
+          tr.appendChild(td4);
+
+          table.appendChild(tr);
+        });
+      }
+
+      outputDiv.appendChild(table);
+    };
+
+    const buildChart = (data) => {
+      if (chartInstance) chartInstance.destroy();
+
+      const labels = data.map(r => r.ClinicName);
+      const values = data.map(r => Number(r.CompletionRate).toFixed(2));
+
+      chartInstance = new Chart(chartCanvas, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Completion Rate (%)",
+            data: values,
+            backgroundColor: "rgba(0, 140, 180, 0.7)",
+            borderColor: "rgba(0, 140, 180, 1)",
+            borderWidth: 2,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: "top",
+              labels: { color: "black" }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Completion Rate (%)",
+                color: "black"
+              },
+              ticks: { color: "black" }
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Clinic",
+                color: "black"
+              },
+              ticks: { color: "black" }
+            }
+          }
+        }
+      });
+    };
+
+    const runReport = async () => {
+      clearActionMessage();
+
+      const sortDirection = document.querySelector("#SortDirection").value;
+
+      const sql =
+        "SELECT c.ClinicName, " +
+        "COUNT(a.AppointmentID) AS TotalAppointments, " +
+        "SUM(s.StatusName = 'Completed') AS CompletedAppointments, " +
+        "(SUM(s.StatusName = 'Completed') / NULLIF(COUNT(a.AppointmentID), 0)) * 100 AS CompletionRate " +
+        "FROM tblClinic c " +
+        "LEFT JOIN tblPatient p ON p.ClinicID = c.ClinicID " +
+        "LEFT JOIN tblAppointment a ON a.PatientID = p.PatientID " +
+        "LEFT JOIN tblAppointment_Status s ON s.StatusID = a.StatusID " +
+        "GROUP BY c.ClinicName " +
+        "ORDER BY CompletionRate " + sortDirection + ";";
+
+      const result = await runQuery(sql);
+
+      if (!result || !result.success) {
+        showActionMessage(result?.error || "Unable to run report.");
+        return;
+      }
+
+      buildTable(result.data);
+      buildChart(result.data);
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await runReport();
+    });
+
+    document.addEventListener("DOMContentLoaded", runReport);
+  </script>
+
 </body>
 </html>

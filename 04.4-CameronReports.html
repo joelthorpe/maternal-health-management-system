@@ -5,15 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Clinic Reports</title>
-  <link rel="stylesheet" href="css\style.css">
-
+  <title>Cameron Reports</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
   <div class="navbar">
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="04-ReportsDashboard.html">Reports Dashboard</a>
     <span class="nav-separator"></span>
+
     <div class="nav-dropdown">
       <a href="04.1-JoelReports.html">Joel Reports</a>
       <div class="dropdown-menu">
@@ -22,6 +23,7 @@
         <a href="04.1-JoelReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.2-MartinReports.html">Martin Reports</a>
       <div class="dropdown-menu">
@@ -30,6 +32,7 @@
         <a href="04.2-MartinReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.3-AdamReports.html">Adam Reports</a>
       <div class="dropdown-menu">
@@ -38,6 +41,7 @@
         <a href="04.3-AdamReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.4-CameronReports.html">Cameron Reports</a>
       <div class="dropdown-menu">
@@ -46,6 +50,7 @@
         <a href="04.4-CameronReport3.html">Report 3</a>
       </div>
     </div>
+
     <div class="nav-dropdown">
       <a href="04.5-JonnyReports.html">Jonny Reports</a>
       <div class="dropdown-menu">
@@ -57,8 +62,39 @@
   </div>
 
   <div class="dashboard-bg">
+
+    <div class="text-box">
+      <h1>Cameron’s SQL Reports</h1>
+      <p>Select one of the reports below to run the query and view the output.</p>
+    </div>
+
+    <div class="cards-container">
+
+      <div class="card">
+        <h2>Report 1</h2>
+        <h3>Appointment Completion Rate by Clinic</h3>
+        <p>Displays each clinic’s appointment completion performance, helping identify high and low performers.</p>
+        <a class="card-button" href="04.4-CameronReport1.html">View Report</a>
+      </div>
+
+      <div class="card">
+        <h2>Report 2</h2>
+        <h3>Patient Appointment History</h3>
+        <p>Allows staff to select a patient and view all recorded appointments, including status and dates.</p>
+        <a class="card-button" href="04.4-CameronReport2.html">View Report</a>
+      </div>
+
+      <div class="card card-center">
+        <h2>Report 3</h2>
+        <h3>Patients With Multiple Risk Factors</h3>
+        <p>Identifies patients who have two or more risk factors, helping prioritise those needing closer monitoring.</p>
+        <a class="card-button" href="04.4-CameronReport3.html">View Report</a>
+      </div>
+
+    </div>
   </div>
 
   <script src="js/script.js"></script>
 </body>
+
 </html>
