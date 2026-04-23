@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jonny Reports</title>
+
+  <title>Jonny's Reports</title>
   <link rel="stylesheet" href="css/style.css">
+
 </head>
-
 <body>
-
   <div class="navbar">
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="04-ReportsDashboard.html">Reports Dashboard</a>
@@ -17,43 +17,85 @@
 
     <div class="nav-dropdown">
       <a href="04.1-JoelReports.html">Joel Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.1-JoelReport1.html">Report 1</a>
+        <a href="04.1-JoelReport2.html">Report 2</a>
+        <a href="04.1-JoelReport3.html">Report 3</a>
+      </div>
     </div>
 
     <div class="nav-dropdown">
       <a href="04.2-MartinReports.html">Martin Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.2-MartinReport1.html">Report 1</a>
+        <a href="04.2-MartinReport2.html">Report 2</a>
+        <a href="04.2-MartinReport3.html">Report 3</a>
+      </div>
     </div>
 
     <div class="nav-dropdown">
       <a href="04.3-AdamReports.html">Adam Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.3-AdamReport1.html">Report 1</a>
+        <a href="04.3-AdamReport2.html">Report 2</a>
+        <a href="04.3-AdamReport3.html">Report 3</a>
+      </div>
     </div>
 
     <div class="nav-dropdown">
       <a href="04.4-CameronReports.html">Cameron Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.4-CameronReport1.html">Report 1</a>
+        <a href="04.4-CameronReport2.html">Report 2</a>
+        <a href="04.4-CameronReport3.html">Report 3</a>
+      </div>
     </div>
 
     <div class="nav-dropdown">
       <a href="04.5-JonnyReports.html">Jonny Reports</a>
+      <div class="dropdown-menu">
+        <a href="04.5-JonnyReport1.html">Report 1</a>
+        <a href="04.5-JonnyReport2.html">Report 2</a>
+        <a href="04.5-JonnyReport3.html">Report 3</a>
+      </div>
     </div>
   </div>
 
-  <div class="report-container">
-    <h1>Jonny Reid - Reports</h1>
-    <p>Select one of the reports below to view insights from the database.</p>
+  <div class="dashboard-bg">
+    <div class="text-box">
+      <h1>Jonny's SQL Reports</h1>
+      <p>Below are my three reports based on NHS-style data analysis.</p>
+    </div>
 
-    <div class="report-links">
-      <button onclick="location.href='04.5-JonnyReport1.html'">
-        Report 1: Most Common Risk Factors
-      </button>
+    <div class="cards-container">
 
-      <button onclick="location.href='04.5-JonnyReport2.html'">
-        Report 2: Patients with Multiple Risk Factors
-      </button>
+      <div class="card">
+        <h2>Report 1</h2>
+        <h3>Most Common Risk Factors</h3>
+        <p>Identifies the most common risk factors across all clinics to support resource allocation.</p>
+        <p>Click below to view the report</p>
+        <a class="card-button" href="04.5-JonnyReport1.html">View Report</a>
+      </div>
 
-      <button onclick="location.href='04.5-JonnyReport3.html'">
-        Report 3: Patients with the Most Appointments
-      </button>
+      <div class="card">
+        <h2>Report 2</h2>
+        <h3>Patients with Multiple Risk Factors</h3>
+        <p>Highlights patients with multiple risks to identify those requiring closer monitoring.</p>
+        <p>Click below to view the report</p>
+        <a class="card-button" href="04.5-JonnyReport2.html">View Report</a>
+      </div>
+
+      <div class="card card-center">
+        <h2>Report 3</h2>
+        <h3>Patients with Most Appointments</h3>
+        <p>Shows patients attending the most appointments to identify high-demand cases.</p>
+        <p>Click below to view the report</p>
+        <a class="card-button" href="04.5-JonnyReport3.html">View Report</a>
+      </div>
+
     </div>
   </div>
 
+  <script src="js/script.js"></script>
 </body>
 </html>

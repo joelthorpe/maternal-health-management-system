@@ -6,6 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jonny Report 1</title>
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .text-box {
+      background-color: rgba(12, 72, 140, 0.7);
+      border: 5px solid #183560;
+      padding: 30px 40px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 1000px;
+      margin-bottom: 50px;
+      font-family: "Altone", sans-serif;
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
@@ -55,48 +69,77 @@
     </div>
   </div>
 
-  <div class="report-container">
-    <h1>Report 1: Most Common Risk Factors</h1>
-    <p>This report identifies the most common pregnancy risk factors across all clinics.</p>
-    <button onclick="runReport()">Run Report</button>
-    <div id="output"></div>
+  <div class="dashboard-bg">
+    <div class="text-box">
+      <h2>Jonny Report 1 - Most Common Risk Factors</h2>
+      <p>Shows the most common pregnancy risk factors across all clinics.</p>
+    </div>
+
+    <div class="main layout">
+      <div class="form">
+        <h2>Run Report</h2>
+        <button onclick="runReport()">Run Report</button>
+      </div>
+
+      <div class="form">
+        <h2>Report Output</h2>
+        <div class="table-wrapper">
+          <div class="displayResults"></div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script src="js/script.js"></script>
 
   <script>
     function runReport() {
-      const query = `SELECT rf.RiskDescription, COUNT(pr.RiskID) AS risk_occurrence FROM tblPatient_RiskFactors pr INNER JOIN tblRiskFactors rf ON pr.RiskID = rf.RiskID GROUP BY rf.RiskDescription ORDER BY risk_occurrence DESC LIMIT 3;`;
+      const sql = "SELECT rf.RiskDescription, COUNT(pr.RiskID) AS risk_occurrence FROM tblPatient_RiskFactors pr INNER JOIN tblRiskFactors rf ON pr.RiskID = rf.RiskID GROUP BY rf.RiskDescription ORDER BY risk_occurrence DESC LIMIT 3;";
 
-      fetch("https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php", {
-        method: "POST",
-        body: new URLSearchParams({ query: query })
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (!result.success || !result.data || result.data.length === 0) {
-          document.getElementById("output").innerHTML = "No data available";
-          return;
+      runQuery(sql).then(result => {
+        if (result && result.success) {
+          fillResultTable(result);
+        }
+      });
+    }
+
+    function fillResultTable(result) {
+      const resultsDiv = document.querySelector('.displayResults');
+      resultsDiv.innerHTML = '';
+
+      const resultData = result.data;
+
+      if (resultData.length === 0) {
+        resultsDiv.innerHTML = 'No data found for this report.';
+        return;
+      }
+
+      const table = document.createElement('table');
+
+      const headings = ["Risk Description", "Occurrence"];
+      let headerRow = document.createElement('tr');
+
+      for (let heading of headings) {
+        let th = document.createElement('th');
+        th.textContent = heading;
+        headerRow.appendChild(th);
+      }
+
+      table.appendChild(headerRow);
+
+      for (let data of resultData) {
+        let row = document.createElement('tr');
+
+        for (let key in data) {
+          let td = document.createElement('td');
+          td.textContent = data[key];
+          row.appendChild(td);
         }
 
-        let output = "<table border='1'><tr>";
+        table.appendChild(row);
+      }
 
-        for (let key in result.data[0]) {
-          output += `<th>${key}</th>`;
-        }
-        output += "</tr>";
-
-        result.data.forEach(row => {
-          output += "<tr>";
-          for (let key in row) {
-            output += `<td>${row[key]}</td>`;
-          }
-          output += "</tr>";
-        });
-
-        output += "</table>";
-
-        document.getElementById("output").innerHTML = output;
-      })
-      .catch(error => console.error(error));
+      resultsDiv.appendChild(table);
     }
   </script>
 

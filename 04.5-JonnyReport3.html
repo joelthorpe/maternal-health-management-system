@@ -6,15 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jonny Report 3</title>
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .text-box {
+      background-color: rgba(12, 72, 140, 0.7);
+      border: 5px solid #183560;
+      padding: 30px 40px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 1000px;
+      margin-bottom: 50px;
+      font-family: "Altone", sans-serif;
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
-
   <div class="navbar">
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
     <a href="04-ReportsDashboard.html">Reports Dashboard</a>
     <span class="nav-separator"></span>
-
     <div class="nav-dropdown">
       <a href="04.1-JoelReports.html">Joel Reports</a>
       <div class="dropdown-menu">
@@ -23,7 +35,6 @@
         <a href="04.1-JoelReport3.html">Report 3</a>
       </div>
     </div>
-
     <div class="nav-dropdown">
       <a href="04.2-MartinReports.html">Martin Reports</a>
       <div class="dropdown-menu">
@@ -32,7 +43,6 @@
         <a href="04.2-MartinReport3.html">Report 3</a>
       </div>
     </div>
-
     <div class="nav-dropdown">
       <a href="04.3-AdamReports.html">Adam Reports</a>
       <div class="dropdown-menu">
@@ -41,7 +51,6 @@
         <a href="04.3-AdamReport3.html">Report 3</a>
       </div>
     </div>
-
     <div class="nav-dropdown">
       <a href="04.4-CameronReports.html">Cameron Reports</a>
       <div class="dropdown-menu">
@@ -50,7 +59,6 @@
         <a href="04.4-CameronReport3.html">Report 3</a>
       </div>
     </div>
-
     <div class="nav-dropdown">
       <a href="04.5-JonnyReports.html">Jonny Reports</a>
       <div class="dropdown-menu">
@@ -61,50 +69,72 @@
     </div>
   </div>
 
-  <div class="report-container">
-    <h1>Report 3: Patients with the Most Appointments</h1>
-    <p>This report identifies the top patients with the highest number of appointments.</p>
+  <div class="dashboard-bg">
+    <div class="text-box">
+      <h2>Jonny Report 3 - Patients with Most Appointments</h2>
+      <p>Shows top 5 patients with the highest number of appointments.</p>
+    </div>
 
-    <button onclick="runReport()">Run Report</button>
+    <div class="main layout">
+      <div class="form">
+        <h2>Run Report</h2>
+        <button onclick="runReport()">Run Report</button>
+      </div>
 
-    <div id="output"></div>
+      <div class="form">
+        <h2>Report Output</h2>
+        <div class="table-wrapper">
+          <div class="displayResults"></div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script src="js/script.js"></script>
 
   <script>
     function runReport() {
-      const query = `SELECT p.PatientID, p.PatientForename, p.PatientSurname, COUNT(a.AppointmentID) AS TotalAppointments FROM tblPatient p LEFT JOIN tblAppointment a ON p.PatientID = a.PatientID GROUP BY p.PatientID, p.PatientForename, p.PatientSurname ORDER BY TotalAppointments DESC LIMIT 5;`;
+      const sql = "SELECT p.PatientID, p.PatientForename, p.PatientSurname, COUNT(a.AppointmentID) AS TotalAppointments FROM tblPatient p LEFT JOIN tblAppointment a ON p.PatientID = a.PatientID GROUP BY p.PatientID, p.PatientForename, p.PatientSurname ORDER BY TotalAppointments DESC LIMIT 5;";
 
-      fetch("https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php", {
-        method: "POST",
-        body: new URLSearchParams({ query: query })
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (!result.success || !result.data || result.data.length === 0) {
-          document.getElementById("output").innerHTML = "No data available";
-          return;
+      runQuery(sql).then(result => {
+        if (result && result.success) {
+          fillResultTable(result);
         }
+      });
+    }
 
-        let output = "<table border='1'><tr>";
+    function fillResultTable(result) {
+      const resultsDiv = document.querySelector('.displayResults');
+      resultsDiv.innerHTML = '';
 
-        for (let key in result.data[0]) {
-          output += `<th>${key}</th>`;
+      if (result.data.length === 0) {
+        resultsDiv.innerHTML = 'No data found.';
+        return;
+      }
+
+      const table = document.createElement('table');
+      const headings = ["Patient ID", "Forename", "Surname", "Appointments"];
+
+      let headerRow = document.createElement('tr');
+      headings.forEach(h => {
+        let th = document.createElement('th');
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+
+      table.appendChild(headerRow);
+
+      for (let rowData of result.data) {
+        let row = document.createElement('tr');
+        for (let key in rowData) {
+          let td = document.createElement('td');
+          td.textContent = rowData[key];
+          row.appendChild(td);
         }
-        output += "</tr>";
+        table.appendChild(row);
+      }
 
-        result.data.forEach(row => {
-          output += "<tr>";
-          for (let key in row) {
-            output += `<td>${row[key]}</td>`;
-          }
-          output += "</tr>";
-        });
-
-        output += "</table>";
-
-        document.getElementById("output").innerHTML = output;
-      })
-      .catch(error => console.error(error));
+      resultsDiv.appendChild(table);
     }
   </script>
 
