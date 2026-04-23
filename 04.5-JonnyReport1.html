@@ -4,11 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Jonny Report 1</title>
-  <link rel="stylesheet" href="css\style.css">
-
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
   <div class="navbar">
     <b onclick="location.href='00-MainPage.html'">Maternal Care</b>
@@ -56,9 +55,50 @@
     </div>
   </div>
 
-  <div class="dashboard-bg">
+  <div class="report-container">
+    <h1>Report 1: Most Common Risk Factors</h1>
+    <p>This report identifies the most common pregnancy risk factors across all clinics.</p>
+    <button onclick="runReport()">Run Report</button>
+    <div id="output"></div>
   </div>
 
-  <script src="js/script.js"></script>
+  <script>
+    function runReport() {
+      const query = `SELECT rf.RiskDescription, COUNT(pr.RiskID) AS risk_occurrence FROM tblPatient_RiskFactors pr INNER JOIN tblRiskFactors rf ON pr.RiskID = rf.RiskID GROUP BY rf.RiskDescription ORDER BY risk_occurrence DESC LIMIT 3;`;
+
+      fetch("https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php", {
+        method: "POST",
+        body: new URLSearchParams({ query: query })
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (!result.success || !result.data || result.data.length === 0) {
+          document.getElementById("output").innerHTML = "No data available";
+          return;
+        }
+
+        let output = "<table border='1'><tr>";
+
+        for (let key in result.data[0]) {
+          output += `<th>${key}</th>`;
+        }
+        output += "</tr>";
+
+        result.data.forEach(row => {
+          output += "<tr>";
+          for (let key in row) {
+            output += `<td>${row[key]}</td>`;
+          }
+          output += "</tr>";
+        });
+
+        output += "</table>";
+
+        document.getElementById("output").innerHTML = output;
+      })
+      .catch(error => console.error(error));
+    }
+  </script>
+
 </body>
 </html>
