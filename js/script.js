@@ -4,7 +4,7 @@ e.g. https://zouyang03.webhosting1.eeecs.qub.ac.uk/dbConnector.php
 
 // This Method will be the main method used to run queries 
 const runQuery = async (sql) => {
-    const url = "https://amckelvey06.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
+    const url = "https://jthorpe01.webhosting1.eeecs.qub.ac.uk/dbConnector.php";
 
     try{
         // This sends the SQL query to the database
@@ -26,7 +26,8 @@ const runQuery = async (sql) => {
         return result;
     }
     catch(error){
-        console.log(error.message);
+        alert("Error:" + error.message);
+        return;
     }
 } 
 
@@ -134,15 +135,15 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
                         }
                         else
                         {
-                            console.log("no data there");
+                            //console.log("no data there");
                             // Checks if the error is because the field isnt in the table, could be improved 
                             if(checkResult.error == `Error: Unknown column '${fields[0]}' in 'SELECT'`)
                             {
-                                // console.log("ID not present in table");
+                                //alert("Error: ID not present in table");
                             }
                             else
                             {
-                                console.log(checkResult.error);
+                                //alert("Error: " + checkResult.error);
                             }
                         }
 
@@ -184,6 +185,8 @@ const fillTable = async (divElement, SQLtableName, fields, messageDiv, primaryKe
 
                     // Unlock the delete button so the user can reattempt
                     deleteBtn.disabled = false;
+
+                    return;
                 }
 
             })
@@ -464,6 +467,7 @@ const handleFormSubmission = (divElement, formName, fields, tableName, primaryKe
                 return;
             } else {
                 alert(result.error);
+                return;
             }
         // Update Record Logic
         } else {
@@ -517,6 +521,7 @@ const handleFormSubmission = (divElement, formName, fields, tableName, primaryKe
                 return;
             } else {
                 alert(result.error);
+                return;
             }
         }
       
@@ -542,6 +547,7 @@ const resetForm = (formName, fields, tableName, primaryKeyPrefix, messageDiv = n
         } else {
             // Else, tell the user something went wrong
             alert(`Invalid Field: ${field}`)
+            return;
         }
     }
 
