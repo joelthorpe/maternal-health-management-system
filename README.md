@@ -19,6 +19,19 @@ A full-stack, database-driven web application built to support safer pregnancies
 * Database Documentation and Web Architecture Presentation
 * NoSQL Database Model Evaluation
 
+## My Contributions
+* **Database Documentation:** Co-developed the final Data Dictionary and Entity-Relationship Diagram (ERD) to align with the implemented MySQL schema.
+* **Database Schema:** Created the core database tables (clinics, staff, appointments, regions, risk factors, assigned risk factors, roles, patients), implemented Primary and Foreign Keys, and added indexes to optimise report query speeds.
+* **Database Integrity:** Set up database constraints to prevent erroneous data, including range checks for risk severity and clinic capacity, format checks for emails and phones, boundary checks for patient pregnancy data, and restricted options for IsTreated values.
+* **Database Test Data:** Generated and inserted realistic test data using resources like WHO and UNICEF data.
+* **API Interaction & Client-Side Logic:** Collaborated on the JavaScript needed to dynamically fetch records, handle display messages, populate tables and dropdowns, retrieve the latest IDs, manage CRUD form submissions, and reset forms.
+* **CRUD Functionality:** Built the complete UI, functionality, and client-side validation (validateRiskFactors and validatePatientRiskFactors) for managing "Risk Factors" and "Patient Risk Factors", which included handling many-to-many relationships and user confirmation alerts.
+* **SQL & Web Reporting:** Wrote the SQL queries and developed the web interfaces (custom HTML, CSS, and JS) for three specific reports:
+  * *Average Pregnancy Loss Rates by Village:* A tabular report featuring parameterised filtering via a dropdown menu and an INNER JOIN query.
+  * *High-Risk Patients Lacking Active Appointments:* A tabular report with dynamic risk severity filtering powered by LEFT and INNER JOINs.
+  * *Clinic Risk Treatment Success Rates:* A data visualisation using Chart.js to display treated versus untreated success rates, filterable by clinic name using a SQL VIEW.
+* **System Navigation:** Implemented a dedicated report hub linking to my assigned tabular and visual reports, reusing the main website's theme for consistency.
+
 ## Project Structure
 The application is separated into multiple HTML views for different users, alongside assets for styling and interactivity:
 
@@ -49,4 +62,3 @@ The application is separated into multiple HTML views for different users, along
 1. Access the live system directly at: [https://jthorpe01.webhosting1.eeecs.qub.ac.uk/00-MainPage.html](https://jthorpe01.webhosting1.eeecs.qub.ac.uk/00-MainPage.html)
 2. Alternatively, clone this repository.
 3. Open `00-MainPage.html` in a web browser to start the interactive web application locally.
-
